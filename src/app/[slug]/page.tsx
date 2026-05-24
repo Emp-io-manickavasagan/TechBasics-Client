@@ -6,7 +6,6 @@ import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getPostBySlug, BlogPost } from "../../lib/db";
-import { isFirebaseConfigured } from "../../lib/firebase";
 import { 
   ArrowLeft, 
   Calendar, 
@@ -299,7 +298,7 @@ export default function PostPage({ params }: PageProps) {
           </div>
           <div className="flex gap-6 text-xs font-medium">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <a href="http://localhost:3001" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Admin Dashboard</a>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
           </div>
         </div>
       </footer>
