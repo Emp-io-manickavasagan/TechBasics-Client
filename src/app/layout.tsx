@@ -1,0 +1,64 @@
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: "TechBasics — Demystifying Tech, One Byte at a Time",
+    template: "%s | TechBasics",
+  },
+  description:
+    "TechBasics is a minimalist tech blog covering Next.js, React, Firebase, Tailwind CSS, and modern web development fundamentals.",
+  keywords: ["TechBasics", "Web Development", "Next.js", "React", "Firebase", "Tailwind CSS"],
+  metadataBase: new URL("https://techbasics.online"),
+  openGraph: {
+    title: "TechBasics — Demystifying Tech, One Byte at a Time",
+    description:
+      "A minimalist tech blog covering Next.js, React, Firebase, and modern web development.",
+    url: "https://techbasics.online",
+    siteName: "TechBasics",
+    locale: "en_US",
+    type: "website",
+  },
+  icons: {
+    icon: "/icon.ico",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+    },
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+      <head>
+        {/* Preconnect to Firebase & Google APIs for faster first Firestore call */}
+        <link rel="preconnect" href="https://firestore.googleapis.com" />
+        <link rel="preconnect" href="https://www.googleapis.com" />
+        <link rel="preconnect" href="https://identitytoolkit.googleapis.com" />
+        <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
+        {/* Preconnect to Unsplash CDN for featured images */}
+        <link rel="preconnect" href="https://images.unsplash.com" />
+      </head>
+      <body className={`${inter.className} min-h-full flex flex-col bg-slate-50/50`}>{children}</body>
+    </html>
+  );
+}
