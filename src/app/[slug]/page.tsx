@@ -247,7 +247,21 @@ export default function PostPage({ params }: PageProps) {
                 },
                 a: ({node, ...props}) => <a className="text-indigo-600 hover:text-indigo-800 font-semibold underline underline-offset-4" {...props} />,
                 hr: ({node, ...props}) => <hr className="my-8 border-slate-100" {...props} />,
-                img: ({node, ...props}) => <img className="rounded-2xl max-w-full h-auto mx-auto shadow my-6" {...props} />
+                img: ({node, ...props}) => <img className="rounded-2xl max-w-full h-auto mx-auto shadow my-6" {...props} />,
+                table: ({node, ...props}) => (
+                  <div className="overflow-x-auto my-8 rounded-2xl border border-slate-200 shadow-sm">
+                    <table className="min-w-full divide-y divide-slate-200 text-sm" {...props} />
+                  </div>
+                ),
+                thead: ({node, ...props}) => <thead className="bg-slate-50" {...props} />,
+                tbody: ({node, ...props}) => <tbody className="divide-y divide-slate-100 bg-white" {...props} />,
+                tr: ({node, ...props}) => <tr className="hover:bg-slate-50/50 transition-colors" {...props} />,
+                th: ({node, ...props}) => (
+                  <th className="px-6 py-4.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider font-semibold" {...props} />
+                ),
+                td: ({node, ...props}) => (
+                  <td className="px-6 py-4 text-slate-600 text-[14px] align-middle" {...props} />
+                )
               }}
             >
               {post.content}

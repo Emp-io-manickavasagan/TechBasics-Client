@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
+import { Suspense } from "react";
+import GoogleAnalyticsTracker from "./components/GoogleAnalyticsTracker";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -60,6 +62,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://images.unsplash.com" />
       </head>
       <body className={`${inter.className} min-h-full flex flex-col bg-slate-50/50`}>
+        <Suspense fallback={null}>
+          <GoogleAnalyticsTracker />
+        </Suspense>
         {children}
         <Script
           async
