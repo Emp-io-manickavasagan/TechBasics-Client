@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemap reference for search engines
-Sitemap: https://techbasics.online/sitemap.xml
+Sitemap: https://www.techbasics.online/sitemap.xml

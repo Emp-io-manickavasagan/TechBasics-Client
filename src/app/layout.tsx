@@ -19,12 +19,15 @@ export const metadata: Metadata = {
   description:
     "TechBasics is a minimalist tech blog covering Next.js, React, Firebase, Tailwind CSS, and modern web development fundamentals.",
   keywords: ["TechBasics", "Web Development", "Next.js", "React", "Firebase", "Tailwind CSS"],
-  metadataBase: new URL("https://techbasics.online"),
+  metadataBase: new URL("https://www.techbasics.online"),
+  alternates: {
+    canonical: "https://www.techbasics.online",
+  },
   openGraph: {
     title: "TechBasics — Demystifying Tech, One Byte at a Time",
     description:
       "A minimalist tech blog covering Next.js, React, Firebase, and modern web development.",
-    url: "https://techbasics.online",
+    url: "https://www.techbasics.online",
     siteName: "TechBasics",
     locale: "en_US",
     type: "website",

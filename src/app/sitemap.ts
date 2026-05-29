@@ -4,7 +4,7 @@ import { getPosts } from '@/lib/db';
 export const revalidate = 604800; // Revalidate every 7 days (604800 seconds)
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://techbasics.online';
+  const baseUrl = 'https://www.techbasics.online';
 
   try {
     // Fetch all posts from the database
@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Return a basic sitemap if there's an error
     return [
       {
-        url: 'https://techbasics.online',
+        url: 'https://www.techbasics.online',
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
         priority: 1.0,
