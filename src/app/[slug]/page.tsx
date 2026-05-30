@@ -124,7 +124,7 @@ export default function PostPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-800 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="min-h-screen bg-slate-50/50 text-slate-800 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden">
       
       {/* Scroll Progress Bar */}
       <div className="fixed top-0 left-0 right-0 h-1 bg-slate-100 z-50">
@@ -136,13 +136,13 @@ export default function PostPage({ params }: PageProps) {
 
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-semibold text-sm transition-all group">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-20 flex items-center justify-between gap-2">
+          <Link href="/" className="flex items-center gap-1.5 sm:gap-2 text-slate-500 hover:text-indigo-600 font-semibold text-sm transition-all group flex-shrink-0">
             <ArrowLeft className="h-4 w-4 transform group-hover:-translate-x-0.5 transition-transform" />
-            Back to Articles
+            <span className="hidden sm:inline">Back to Articles</span>
           </Link>
 
-          <Link href="/" className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
             <Image 
               src="/logo.svg" 
               alt="TechBasics Logo" 
@@ -150,10 +150,10 @@ export default function PostPage({ params }: PageProps) {
               height={32} 
               className="object-contain bg-slate-50 p-1 border border-slate-100 rounded-lg shadow-sm"
             />
-            <span className="text-sm font-bold tracking-tight text-slate-900">TechBasics</span>
+            <span className="text-sm font-bold tracking-tight text-slate-900 hidden xs:inline sm:inline">TechBasics</span>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <button 
               onClick={handleCopyLink}
               className="p-2 border border-slate-200 hover:border-slate-300 rounded-xl bg-white text-slate-500 hover:text-slate-800 shadow-sm transition-all flex items-center gap-1.5 text-xs font-semibold"
@@ -162,12 +162,12 @@ export default function PostPage({ params }: PageProps) {
               {copied ? (
                 <>
                   <Check className="h-3.5 w-3.5 text-emerald-500" />
-                  Copied!
+                  <span className="hidden sm:inline">Copied!</span>
                 </>
               ) : (
                 <>
                   <Share2 className="h-3.5 w-3.5" />
-                  Share
+                  <span className="hidden sm:inline">Share</span>
                 </>
               )}
             </button>
@@ -176,7 +176,7 @@ export default function PostPage({ params }: PageProps) {
       </header>
 
       {/* Hero Banner */}
-      <article className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+      <article className="flex-1 max-w-4xl mx-auto px-3 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8 w-full">
         
         {/* Meta Header */}
         <div className="space-y-4 text-center sm:text-left">
@@ -195,11 +195,11 @@ export default function PostPage({ params }: PageProps) {
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
             {post.title}
           </h1>
 
-          <p className="text-lg text-slate-500 leading-relaxed font-light italic border-l-4 border-indigo-100 pl-4 py-1">
+          <p className="text-base sm:text-lg text-slate-500 leading-relaxed font-light italic border-l-4 border-indigo-100 pl-3 sm:pl-4 py-1">
             {post.excerpt}
           </p>
         </div>
@@ -216,8 +216,8 @@ export default function PostPage({ params }: PageProps) {
         )}
 
         {/* Content Area */}
-        <div className="bg-white border border-slate-100 rounded-3xl p-6 sm:p-10 shadow-sm">
-          <div className="prose prose-slate max-w-none">
+        <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-sm overflow-hidden">
+          <div className="prose prose-slate max-w-none break-words">
             <ReactMarkdown 
               remarkPlugins={[remarkGfm]}
               components={{
@@ -234,33 +234,33 @@ export default function PostPage({ params }: PageProps) {
                 code: ({node, inline, className, children, ...props}: any) => {
                   const match = /language-(\w+)/.exec(className || '');
                   return !inline && match ? (
-                    <pre className="bg-slate-900 text-slate-100 p-5 rounded-2xl overflow-x-auto my-6 text-[13px] font-mono leading-relaxed shadow-inner border border-slate-800">
+                    <pre className="bg-slate-900 text-slate-100 p-3 sm:p-5 rounded-xl sm:rounded-2xl overflow-x-auto my-4 sm:my-6 text-[11px] sm:text-[13px] font-mono leading-relaxed shadow-inner border border-slate-800 max-w-full">
                       <code className={className} {...props}>
                         {children}
                       </code>
                     </pre>
                   ) : (
-                    <code className="bg-indigo-50 text-indigo-700 font-semibold px-1.5 py-0.5 rounded text-[13px] font-mono" {...props}>
+                    <code className="bg-indigo-50 text-indigo-700 font-semibold px-1 sm:px-1.5 py-0.5 rounded text-[11px] sm:text-[13px] font-mono break-all" {...props}>
                       {children}
                     </code>
                   );
                 },
                 a: ({node, ...props}) => <a className="text-indigo-600 hover:text-indigo-800 font-semibold underline underline-offset-4" {...props} />,
                 hr: ({node, ...props}) => <hr className="my-8 border-slate-100" {...props} />,
-                img: ({node, ...props}) => <img className="rounded-2xl max-w-full h-auto mx-auto shadow my-6" {...props} />,
+                img: ({node, ...props}) => <img className="rounded-xl sm:rounded-2xl max-w-full h-auto mx-auto shadow my-4 sm:my-6" {...props} />,
                 table: ({node, ...props}) => (
-                  <div className="overflow-x-auto my-8 rounded-2xl border border-slate-200 shadow-sm">
-                    <table className="min-w-full divide-y divide-slate-200 text-sm" {...props} />
+                  <div className="overflow-x-auto my-4 sm:my-8 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm -mx-1 sm:mx-0">
+                    <table className="min-w-full divide-y divide-slate-200 text-xs sm:text-sm" {...props} />
                   </div>
                 ),
                 thead: ({node, ...props}) => <thead className="bg-slate-50" {...props} />,
                 tbody: ({node, ...props}) => <tbody className="divide-y divide-slate-100 bg-white" {...props} />,
                 tr: ({node, ...props}) => <tr className="hover:bg-slate-50/50 transition-colors" {...props} />,
                 th: ({node, ...props}) => (
-                  <th className="px-6 py-4.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider font-semibold" {...props} />
+                  <th className="px-3 sm:px-6 py-2.5 sm:py-4 text-left text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider" {...props} />
                 ),
                 td: ({node, ...props}) => (
-                  <td className="px-6 py-4 text-slate-600 text-[14px] align-middle" {...props} />
+                  <td className="px-3 sm:px-6 py-2.5 sm:py-4 text-slate-600 text-[12px] sm:text-[14px] align-middle" {...props} />
                 )
               }}
             >
@@ -270,14 +270,14 @@ export default function PostPage({ params }: PageProps) {
         </div>
 
         {/* Footer info & tags */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-slate-200">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 font-medium">Tags:</span>
-            <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-slate-200">
+          <div className="flex items-start sm:items-center gap-2 flex-wrap">
+            <span className="text-xs text-slate-400 font-medium mt-1 sm:mt-0">Tags:</span>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {post.tags && post.tags.map(tag => (
                 <span 
                   key={tag} 
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200/50 text-xs font-medium text-slate-600"
+                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-slate-100 border border-slate-200/50 text-[11px] sm:text-xs font-medium text-slate-600"
                 >
                   <Tag className="h-3 w-3 text-slate-400" />
                   {tag}
@@ -297,7 +297,7 @@ export default function PostPage({ params }: PageProps) {
       </article>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 mt-20 border-t border-slate-800 py-12">
+      <footer className="bg-slate-900 text-slate-400 mt-12 sm:mt-20 border-t border-slate-800 py-8 sm:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
           <div className="space-y-1">
             <div className="flex items-center justify-center sm:justify-start gap-2">
