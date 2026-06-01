@@ -1,138 +1,167 @@
-"use client";
-
-import { useEffect, useState, use } from "react";
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { getPostBySlug, BlogPost } from "../../lib/db";
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Tag, 
-  Folder, 
-  Clock, 
-  Bookmark, 
-  Share2, 
-  Check, 
-  Link as LinkIcon 
+import {
+  ArrowLeft,
+  Calendar,
+  Tag,
+  Folder,
+  Bookmark,
 } from "lucide-react";
+import { getPostsServer, getPostBySlugServer } from "../../lib/db-server";
+import { ScrollProgressBar, CopyLinkButton } from "../components/PostInteractions";
+import MarkdownRenderer from "../components/MarkdownRenderer";
 
+// ─── Static Site Generation ────────────────────────────────────────────────
+// Revalidate every 1 hour (ISR) — pages are generated at build time via
+// generateStaticParams, then refreshed on-demand.
+export const revalidate = 3600;
+
+/**
+ * generateStaticParams — Next.js App Router equivalent of getStaticPaths.
+ * Fetches all published blog post slugs from Firebase at build time so that
+ * each blog post page is pre-rendered as static HTML.
+ */
+export async function generateStaticParams() {
+  const posts = await getPostsServer();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
+/**
+ * generateMetadata — Next.js App Router equivalent of per-page <head> metadata.
+ * Sets the canonical tag to the CURRENT blog post URL (not the homepage),
+ * along with proper title, description, OpenGraph, and structured data.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPostBySlugServer(slug);
+
+  if (!post) {
+    return {
+      title: "Article Not Found",
+      description: "The requested article could not be found.",
+    };
+  }
+
+  const baseUrl = "https://www.techbasics.online";
+  const postUrl = `${baseUrl}/${post.slug}`;
+
+  return {
+    title: post.title,
+    description: post.metaDescription || post.excerpt,
+    keywords: post.metaKeywords,
+    alternates: {
+      canonical: postUrl,
+    },
+    openGraph: {
+      title: post.title,
+      description: post.metaDescription || post.excerpt,
+      url: postUrl,
+      siteName: "TechBasics",
+      type: "article",
+      publishedTime: post.createdAt,
+      modifiedTime: post.updatedAt,
+      ...(post.featuredImage && {
+        images: [{ url: post.featuredImage, alt: post.title }],
+      }),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.metaDescription || post.excerpt,
+      ...(post.featuredImage && { images: [post.featuredImage] }),
+    },
+    other: {
+      "article:published_time": post.createdAt,
+      "article:modified_time": post.updatedAt,
+    },
+  };
+}
+
+// ─── Page Component (Server Component — no "use client") ───────────────────
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export default function PostPage({ params }: PageProps) {
-  const { slug } = use(params);
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
-  const [readingProgress, setReadingProgress] = useState(0);
-
-  useEffect(() => {
-    async function loadPost() {
-      try {
-        const fetched = await getPostBySlug(slug);
-        setPost(fetched);
-        
-        // Dynamic SEO Update (Frontend Safe)
-        if (fetched) {
-          document.title = `${fetched.title} | TechBasics`;
-          
-          // Update or create meta description
-          let metaDesc = document.querySelector('meta[name="description"]');
-          if (!metaDesc) {
-            metaDesc = document.createElement('meta');
-            metaDesc.setAttribute('name', 'description');
-            document.head.appendChild(metaDesc);
-          }
-          metaDesc.setAttribute('content', fetched.metaDescription || fetched.excerpt);
-
-          // Update or create meta keywords
-          if (fetched.metaKeywords && fetched.metaKeywords.length > 0) {
-            let metaKeys = document.querySelector('meta[name="keywords"]');
-            if (!metaKeys) {
-              metaKeys = document.createElement('meta');
-              metaKeys.setAttribute('name', 'keywords');
-              document.head.appendChild(metaKeys);
-            }
-            metaKeys.setAttribute('content', fetched.metaKeywords.join(', '));
-          }
-        }
-      } catch (err) {
-        console.error("Error fetching post:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadPost();
-  }, [slug]);
-
-  // Handle Reading Progress Scroll indicator
-  useEffect(() => {
-    const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalHeight > 0) {
-        const progress = (window.pageYOffset / totalHeight) * 100;
-        setReadingProgress(progress);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const handleCopyLink = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center space-y-4 animate-pulse">
-          <div className="h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm font-semibold text-slate-500">Loading Article...</p>
-        </div>
-      </div>
-    );
-  }
+export default async function PostPage({ params }: PageProps) {
+  const { slug } = await params;
+  const post = await getPostBySlugServer(slug);
 
   if (!post) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4 text-center space-y-6">
-        <div className="h-20 w-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center shadow-inner border border-rose-100">
-          <Bookmark className="h-10 w-10" />
-        </div>
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-slate-900">Article Not Found</h1>
-          <p className="text-slate-500 text-sm max-w-sm">
-            We couldn't locate the blog post you're looking for. It may have been renamed, moved, or deleted.
-          </p>
-        </div>
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-indigo-100"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Homepage
-        </Link>
-      </div>
-    );
+    notFound();
   }
+
+  const baseUrl = "https://www.techbasics.online";
+  const postUrl = `${baseUrl}/${post.slug}`;
+
+  // JSON-LD Structured Data for BlogPosting
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.metaDescription || post.excerpt,
+    datePublished: post.createdAt,
+    dateModified: post.updatedAt,
+    author: {
+      "@type": "Person",
+      name: "TechBasics",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "TechBasics",
+      logo: {
+        "@type": "ImageObject",
+        url: `${baseUrl}/logo.svg`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": postUrl,
+    },
+    ...(post.featuredImage && { image: post.featuredImage }),
+  };
+
+  // Breadcrumb JSON-LD
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: baseUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: post.title,
+        item: postUrl,
+      },
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden">
-      
-      {/* Scroll Progress Bar */}
-      <div className="fixed top-0 left-0 right-0 h-1 bg-slate-100 z-50">
-        <div 
-          className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-75"
-          style={{ width: `${readingProgress}%` }}
-        />
-      </div>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
+      {/* Scroll Progress Bar (client component) */}
+      <ScrollProgressBar />
 
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
@@ -143,41 +172,26 @@ export default function PostPage({ params }: PageProps) {
           </Link>
 
           <Link href="/" className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
-            <Image 
-              src="/logo.svg" 
-              alt="TechBasics Logo" 
-              width={32} 
-              height={32} 
+            <Image
+              src="/logo.svg"
+              alt="TechBasics Logo"
+              width={32}
+              height={32}
               className="object-contain bg-slate-50 p-1 border border-slate-100 rounded-lg shadow-sm"
             />
             <span className="text-sm font-bold tracking-tight text-slate-900 hidden xs:inline sm:inline">TechBasics</span>
           </Link>
 
           <div className="flex items-center gap-2 flex-shrink-0">
-            <button 
-              onClick={handleCopyLink}
-              className="p-2 border border-slate-200 hover:border-slate-300 rounded-xl bg-white text-slate-500 hover:text-slate-800 shadow-sm transition-all flex items-center gap-1.5 text-xs font-semibold"
-              title="Copy link"
-            >
-              {copied ? (
-                <>
-                  <Check className="h-3.5 w-3.5 text-emerald-500" />
-                  <span className="hidden sm:inline">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Share2 className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Share</span>
-                </>
-              )}
-            </button>
+            {/* Copy link button (client component) */}
+            <CopyLinkButton />
           </div>
         </div>
       </header>
 
-      {/* Hero Banner */}
+      {/* Article Content */}
       <article className="flex-1 max-w-4xl mx-auto px-3 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8 w-full">
-        
+
         {/* Meta Header */}
         <div className="space-y-4 text-center sm:text-left">
           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
@@ -190,7 +204,7 @@ export default function PostPage({ params }: PageProps) {
               {new Date(post.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
-                day: "numeric"
+                day: "numeric",
               })}
             </span>
           </div>
@@ -207,9 +221,9 @@ export default function PostPage({ params }: PageProps) {
         {/* Featured Image */}
         {post.featuredImage && (
           <div className="relative h-[250px] sm:h-[400px] w-full overflow-hidden rounded-3xl border border-slate-100 shadow-lg">
-            <img 
-              src={post.featuredImage} 
-              alt={post.title} 
+            <img
+              src={post.featuredImage}
+              alt={post.title}
               className="object-cover w-full h-full"
             />
           </div>
@@ -217,56 +231,7 @@ export default function PostPage({ params }: PageProps) {
 
         {/* Content Area */}
         <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-sm overflow-hidden">
-          <div className="prose prose-slate max-w-none break-words">
-            <ReactMarkdown 
-              remarkPlugins={[remarkGfm]}
-              components={{
-                h1: ({node, ...props}) => <h1 className="text-3xl font-extrabold text-slate-900 mt-8 mb-4 border-b border-slate-100 pb-2" {...props} />,
-                h2: ({node, ...props}) => <h2 className="text-2xl font-bold text-slate-800 mt-8 mb-4" {...props} />,
-                h3: ({node, ...props}) => <h3 className="text-xl font-bold text-slate-800 mt-6 mb-3" {...props} />,
-                p: ({node, ...props}) => <p className="text-slate-600 leading-8 mb-6 text-[15px] sm:text-[16px]" {...props} />,
-                ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-6 text-slate-600 space-y-2 text-[15px]" {...props} />,
-                ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-6 text-slate-600 space-y-2 text-[15px]" {...props} />,
-                li: ({node, ...props}) => <li className="leading-relaxed" {...props} />,
-                blockquote: ({node, ...props}) => (
-                  <blockquote className="border-l-4 border-indigo-600 bg-slate-50/50 rounded-r-xl px-4 py-3 italic text-slate-500 my-6" {...props} />
-                ),
-                code: ({node, inline, className, children, ...props}: any) => {
-                  const match = /language-(\w+)/.exec(className || '');
-                  return !inline && match ? (
-                    <pre className="bg-slate-900 text-slate-100 p-3 sm:p-5 rounded-xl sm:rounded-2xl overflow-x-auto my-4 sm:my-6 text-[11px] sm:text-[13px] font-mono leading-relaxed shadow-inner border border-slate-800 max-w-full">
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    </pre>
-                  ) : (
-                    <code className="bg-indigo-50 text-indigo-700 font-semibold px-1 sm:px-1.5 py-0.5 rounded text-[11px] sm:text-[13px] font-mono break-all" {...props}>
-                      {children}
-                    </code>
-                  );
-                },
-                a: ({node, ...props}) => <a className="text-indigo-600 hover:text-indigo-800 font-semibold underline underline-offset-4" {...props} />,
-                hr: ({node, ...props}) => <hr className="my-8 border-slate-100" {...props} />,
-                img: ({node, ...props}) => <img className="rounded-xl sm:rounded-2xl max-w-full h-auto mx-auto shadow my-4 sm:my-6" {...props} />,
-                table: ({node, ...props}) => (
-                  <div className="overflow-x-auto my-4 sm:my-8 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm -mx-1 sm:mx-0">
-                    <table className="min-w-full divide-y divide-slate-200 text-xs sm:text-sm" {...props} />
-                  </div>
-                ),
-                thead: ({node, ...props}) => <thead className="bg-slate-50" {...props} />,
-                tbody: ({node, ...props}) => <tbody className="divide-y divide-slate-100 bg-white" {...props} />,
-                tr: ({node, ...props}) => <tr className="hover:bg-slate-50/50 transition-colors" {...props} />,
-                th: ({node, ...props}) => (
-                  <th className="px-3 sm:px-6 py-2.5 sm:py-4 text-left text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider" {...props} />
-                ),
-                td: ({node, ...props}) => (
-                  <td className="px-3 sm:px-6 py-2.5 sm:py-4 text-slate-600 text-[12px] sm:text-[14px] align-middle" {...props} />
-                )
-              }}
-            >
-              {post.content}
-            </ReactMarkdown>
-          </div>
+          <MarkdownRenderer content={post.content} />
         </div>
 
         {/* Footer info & tags */}
@@ -274,9 +239,9 @@ export default function PostPage({ params }: PageProps) {
           <div className="flex items-start sm:items-center gap-2 flex-wrap">
             <span className="text-xs text-slate-400 font-medium mt-1 sm:mt-0">Tags:</span>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {post.tags && post.tags.map(tag => (
-                <span 
-                  key={tag} 
+              {post.tags && post.tags.map((tag) => (
+                <span
+                  key={tag}
                   className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-slate-100 border border-slate-200/50 text-[11px] sm:text-xs font-medium text-slate-600"
                 >
                   <Tag className="h-3 w-3 text-slate-400" />
@@ -286,8 +251,8 @@ export default function PostPage({ params }: PageProps) {
             </div>
           </div>
 
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
           >
             ← View all articles

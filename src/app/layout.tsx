@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   keywords: ["TechBasics", "Web Development", "Next.js", "React", "Firebase", "Tailwind CSS"],
   metadataBase: new URL("https://www.techbasics.online"),
   alternates: {
-    canonical: "https://www.techbasics.online",
+    canonical: "/",
   },
   openGraph: {
     title: "TechBasics — Demystifying Tech, One Byte at a Time",
