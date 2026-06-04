@@ -27,7 +27,7 @@ export interface BlogPost {
 
 const LOCAL_KEY = "techbasics_local_posts";
 const DB_TIMEOUT_MS = 5000;
-const CACHE_TTL_MS = 60_000; // 60 second in-memory cache
+const CACHE_TTL_MS = 15_000; // 15 second in-memory cache — keeps data fresh after admin edits
 
 // ─── In-memory cache ───────────────────────────────────────────────────────
 let postsCache: BlogPost[] | null = null;

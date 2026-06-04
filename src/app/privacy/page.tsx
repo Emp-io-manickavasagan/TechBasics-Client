@@ -46,7 +46,7 @@ export default function PrivacyPage() {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-slate-900">TechBasics Privacy Policy</h2>
             <p className="text-slate-600 leading-relaxed">
-              TechBasics is a <strong>read-only blog</strong>. We don't collect personal information from visitors.
+              TechBasics is a <strong>read-only blog</strong>. We don&apos;t collect personal information from visitors.
             </p>
           </div>
 
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
           <div className="space-y-4">
             <h3 className="text-xl font-semibold text-slate-900">Third-Party Links</h3>
             <p className="text-slate-600 leading-relaxed">
-              Our blog may link to external websites. We're not responsible for their privacy practices.
+              Our blog may link to external websites. We&apos;re not responsible for their privacy practices.
             </p>
           </div>
 
@@ -116,7 +116,7 @@ export default function PrivacyPage() {
           </div>
 
           <p className="text-sm text-slate-500 italic">
-            That's it. We keep it simple because we don't collect data.
+            That&apos;s it. We keep it simple because we don&apos;t collect data.
           </p>
         </div>
       </main>

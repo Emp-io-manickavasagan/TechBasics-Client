@@ -14,9 +14,12 @@ import { ScrollProgressBar, CopyLinkButton } from "../components/PostInteraction
 import MarkdownRenderer from "../components/MarkdownRenderer";
 
 // ─── Static Site Generation ────────────────────────────────────────────────
-// Revalidate every 1 hour (ISR) — pages are generated at build time via
-// generateStaticParams, then refreshed on-demand.
-export const revalidate = 3600;
+// Revalidate every 60 seconds (ISR) — pages are generated at build time via
+// generateStaticParams, then refreshed frequently + on-demand from admin.
+export const revalidate = 60;
+
+// Allow dynamically-created post slugs (not just those from generateStaticParams)
+export const dynamicParams = true;
 
 /**
  * generateStaticParams — Next.js App Router equivalent of getStaticPaths.

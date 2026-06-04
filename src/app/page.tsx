@@ -329,8 +329,8 @@ export default function Home() {
               There are no blog posts published yet. Check back soon for concise, jargon-free explanations about AI, programming, startups, and technology.
             </p>
             <div className="flex items-center justify-center gap-3">
-              <a href="/privacy" className="px-4 py-2 text-sm font-semibold rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 transition-colors">Privacy</a>
-              <a href="/" className="px-4 py-2 text-sm font-semibold rounded-xl bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-colors">Refresh</a>
+              <Link href="/privacy" className="px-4 py-2 text-sm font-semibold rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 transition-colors">Privacy</Link>
+              <Link href="/" className="px-4 py-2 text-sm font-semibold rounded-xl bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-colors">Refresh</Link>
             </div>
           </div>
         </section>
