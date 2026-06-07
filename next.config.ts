@@ -8,9 +8,6 @@ const nextConfig: NextConfig = {
   },
 
   // ── Build checks bypass ────────────────────────────────────────────────
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },

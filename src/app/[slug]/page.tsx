@@ -102,7 +102,18 @@ export default async function PostPage({ params }: PageProps) {
   }
 
   const allPosts = await getPostsServer();
-  const relatedPosts = allPosts.filter(p => p.slug !== post.slug && p.visible !== false).slice(0, 3);
+
+  const parseLocalDate = (dateStr: string): number => {
+    if (!dateStr) return 0;
+    if (dateStr.includes("T")) return new Date(dateStr).getTime();
+    return new Date(dateStr + "T00:00:00").getTime();
+  };
+
+  const sortedPosts = [...allPosts].sort((a, b) => {
+    return parseLocalDate(b.createdAt) - parseLocalDate(a.createdAt);
+  });
+
+  const recommendedPosts = sortedPosts.filter(p => p.slug !== post.slug && p.visible !== false && p.recommended).slice(0, 3);
 
   const baseUrl = "https://www.techbasics.online";
   const postUrl = `${baseUrl}/${post.slug}`;
@@ -269,21 +280,25 @@ export default async function PostPage({ params }: PageProps) {
 
       </article>
 
-      {/* Internal Linking: Related Articles */}
-      {relatedPosts.length > 0 && (
+
+      {/* Recommended Articles */}
+      {recommendedPosts.length > 0 && (
         <section className="max-w-4xl mx-auto px-3 sm:px-6 py-10 border-t border-slate-200 w-full">
-          <h3 className="text-xl font-bold text-slate-900 mb-6">Read More</h3>
+          <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+            <Bookmark className="h-5 w-5 text-indigo-500" />
+            Recommended Articles
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {relatedPosts.map((related) => (
-              <Link key={related.id} href={`/${related.slug}`} className="group block space-y-3">
-                {related.featuredImage ? (
+            {recommendedPosts.map((rec) => (
+              <Link key={rec.id} href={`/${rec.slug}`} className="group block space-y-3">
+                {rec.featuredImage ? (
                   <div className="w-full h-32 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
-                    <img src={related.featuredImage} alt={related.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                    <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
                   </div>
                 ) : (
                   <div className="w-full h-32 rounded-2xl bg-slate-100 border border-slate-100" />
                 )}
-                <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-sm">{related.title}</h4>
+                <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-sm">{rec.title}</h4>
               </Link>
             ))}
           </div>
