@@ -62,7 +62,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             <hr className="my-8 border-slate-100" {...props} />
           ),
           img: ({ node, ...props }) => (
-            <img className="rounded-xl sm:rounded-2xl max-w-full h-auto mx-auto shadow my-4 sm:my-6" {...props} />
+            <img className="rounded-xl sm:rounded-2xl max-w-full h-auto mx-auto shadow my-4 sm:my-6" loading="lazy" decoding="async" {...props} />
           ),
           table: ({ node, ...props }) => (
             <div className="overflow-x-auto my-4 sm:my-8 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm -mx-1 sm:mx-0">

@@ -129,6 +129,26 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "TechBasics",
+            "url": "https://www.techbasics.online",
+            "description": "TechBasics is a minimalist tech blog covering Next.js, React, Firebase, Tailwind CSS, and modern web development fundamentals.",
+            "publisher": {
+              "@type": "Organization",
+              "name": "TechBasics",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.techbasics.online/logo.png"
+              }
+            }
+          })
+        }}
+      />
 
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
@@ -388,7 +408,7 @@ export default function Home() {
                       <div className="flex flex-col sm:flex-row items-start gap-5">
                         {post.featuredImage ? (
                           <div className="w-full sm:w-36 h-28 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0">
-                            <img src={post.featuredImage} alt={post.title} className="object-cover w-full h-full" />
+                            <img src={post.featuredImage} alt={post.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
                           </div>
                         ) : (
                           <div className="w-full sm:w-36 h-28 rounded-3xl bg-slate-100 flex-shrink-0" />
@@ -432,7 +452,7 @@ export default function Home() {
                   <article key={post.id} className="group bg-white rounded-3xl border border-slate-100 hover:shadow-lg p-6 min-h-[190px] flex flex-col sm:flex-row items-start gap-6">
                     {post.featuredImage ? (
                       <div className="w-full sm:w-44 h-36 overflow-hidden rounded-3xl flex-shrink-0 bg-slate-100">
-                        <img src={post.featuredImage} alt={post.title} className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                        <img src={post.featuredImage} alt={post.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
                       </div>
                     ) : (
                       <div className="w-full sm:w-44 h-36 rounded-3xl bg-slate-100 flex-shrink-0" />
@@ -497,7 +517,7 @@ export default function Home() {
                   <div className="flex flex-col sm:flex-row items-start gap-4">
                     {p.featuredImage ? (
                       <div className="w-full sm:w-28 h-24 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0">
-                        <img src={p.featuredImage} alt={p.title} className="object-cover w-full h-full" />
+                        <img src={p.featuredImage} alt={p.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
                       </div>
                     ) : (
                       <div className="w-full sm:w-28 h-24 rounded-3xl bg-slate-100 flex-shrink-0" />
@@ -559,7 +579,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row items-start gap-5">
                 {p.featuredImage ? (
                   <div className="w-full sm:w-32 h-28 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0">
-                    <img src={p.featuredImage} alt={p.title} className="object-cover w-full h-full" />
+                    <img src={p.featuredImage} alt={p.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
                   </div>
                 ) : (
                   <div className="w-full sm:w-32 h-28 rounded-3xl bg-slate-100 flex-shrink-0" />

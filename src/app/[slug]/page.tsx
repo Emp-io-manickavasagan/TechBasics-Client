@@ -101,6 +101,9 @@ export default async function PostPage({ params }: PageProps) {
     notFound();
   }
 
+  const allPosts = await getPostsServer();
+  const relatedPosts = allPosts.filter(p => p.slug !== post.slug && p.visible !== false).slice(0, 3);
+
   const baseUrl = "https://www.techbasics.online";
   const postUrl = `${baseUrl}/${post.slug}`;
 
@@ -227,6 +230,8 @@ export default async function PostPage({ params }: PageProps) {
             <img
               src={post.featuredImage}
               alt={post.title}
+              fetchPriority="high"
+              decoding="async"
               className="object-cover w-full h-full"
             />
           </div>
@@ -263,6 +268,27 @@ export default async function PostPage({ params }: PageProps) {
         </div>
 
       </article>
+
+      {/* Internal Linking: Related Articles */}
+      {relatedPosts.length > 0 && (
+        <section className="max-w-4xl mx-auto px-3 sm:px-6 py-10 border-t border-slate-200 w-full">
+          <h3 className="text-xl font-bold text-slate-900 mb-6">Read More</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {relatedPosts.map((related) => (
+              <Link key={related.id} href={`/${related.slug}`} className="group block space-y-3">
+                {related.featuredImage ? (
+                  <div className="w-full h-32 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
+                    <img src={related.featuredImage} alt={related.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                ) : (
+                  <div className="w-full h-32 rounded-2xl bg-slate-100 border border-slate-100" />
+                )}
+                <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-sm">{related.title}</h4>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 mt-12 sm:mt-20 border-t border-slate-800 py-8 sm:py-12">

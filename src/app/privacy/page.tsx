@@ -1,5 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "TechBasics privacy policy. We are a minimalist, read-only blog and do not collect personal data.",
+  alternates: {
+    canonical: "https://www.techbasics.online/privacy",
+  },
+};
 
 export default function PrivacyPage() {
   return (
