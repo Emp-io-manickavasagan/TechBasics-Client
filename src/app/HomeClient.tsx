@@ -19,6 +19,8 @@ import {
   Filter,
 } from "lucide-react";
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] }) {
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
   const [loading, setLoading] = useState(false);
@@ -337,7 +339,7 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
               There are no blog posts published yet. Check back soon for concise, jargon-free explanations about AI, programming, startups, and technology.
             </p>
             <div className="flex items-center justify-center gap-3">
-              <Link href="/privacy" className="px-4 py-2 text-sm font-semibold rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 transition-colors">Privacy</Link>
+              <Link href="/privacy-policy" className="px-4 py-2 text-sm font-semibold rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 transition-colors">Privacy</Link>
               <Link href="/" className="px-4 py-2 text-sm font-semibold rounded-xl bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-colors">Refresh</Link>
             </div>
           </div>
@@ -587,14 +589,16 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
           <div className="space-y-2">
             <span className="text-white font-bold tracking-tight text-lg">TechBasics</span>
-            <p className="text-xs text-slate-500">© {new Date().getFullYear()} TechBasics.online. All rights reserved.</p>
+            <p className="text-xs text-slate-500">© {CURRENT_YEAR} TechBasics.online. All rights reserved.</p>
             <p className="text-xs text-slate-500">
               Email: <a href="mailto:emp.ccreator@gmail.com" className="text-slate-300 hover:text-white transition-colors">emp.ccreator@gmail.com</a>
             </p>
           </div>
           <div className="flex gap-6 text-xs font-medium">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/about" className="hover:text-white transition-colors">About</Link>
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </div>
       </footer>

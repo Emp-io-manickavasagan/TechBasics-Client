@@ -281,6 +281,24 @@ export default async function PostPage({ params }: PageProps) {
       </article>
 
 
+      {/* Author Bio */}
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 w-full">
+        <div className="flex items-start gap-4 bg-white border border-slate-100 rounded-2xl p-5 sm:p-6 shadow-sm">
+          <div className="flex-shrink-0 h-12 w-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg select-none">
+            M
+          </div>
+          <div className="space-y-1 min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-bold text-slate-900">Manickavasagan</span>
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 font-semibold">Author</span>
+            </div>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              CS student and builder writing about tech, startups, AI, and productivity. Built a SaaS that didn&apos;t ship — walked away with real product experience instead. Sharing everything learned along the way.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Recommended Articles */}
       {recommendedPosts.length > 0 && (
         <section className="max-w-4xl mx-auto px-3 sm:px-6 py-10 border-t border-slate-200 w-full">
@@ -321,7 +339,9 @@ export default async function PostPage({ params }: PageProps) {
           </div>
           <div className="flex gap-6 text-xs font-medium">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/about" className="hover:text-white transition-colors">About</Link>
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </div>
       </footer>

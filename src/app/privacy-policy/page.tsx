@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "TechBasics privacy policy. We are a minimalist, read-only blog and do not collect personal data.",
   alternates: {
-    canonical: "https://www.techbasics.online/privacy",
+    canonical: "https://www.techbasics.online/privacy-policy",
   },
 };
 
@@ -26,7 +26,7 @@ export default function PrivacyPage() {
           </Link>
           <nav className="flex items-center gap-6 text-sm font-medium">
             <Link href="/" className="text-slate-600 hover:text-slate-900 transition-colors">Home</Link>
-            <Link href="/privacy" className="text-indigo-600 font-semibold">Privacy Policy</Link>
+            <Link href="/privacy-policy" className="text-indigo-600 font-semibold">Privacy Policy</Link>
           </nav>
         </div>
       </header>
@@ -49,69 +49,83 @@ export default function PrivacyPage() {
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-8">
           <div className="space-y-3">
             <span className="text-xs uppercase tracking-wider text-slate-400 font-semibold">Last Updated</span>
-            <p className="text-sm text-slate-600 font-medium">May 2026</p>
+            <p className="text-sm text-slate-600 font-medium">May 15, 2026</p>
           </div>
 
           <div className="space-y-4">
             <h2 className="text-2xl font-bold text-slate-900">TechBasics Privacy Policy</h2>
             <p className="text-slate-600 leading-relaxed">
-              TechBasics is a <strong>read-only blog</strong>. We don&apos;t collect personal information from visitors.
+              TechBasics (<a href="https://www.techbasics.online" className="text-indigo-600 hover:text-indigo-800 transition-colors">www.techbasics.online</a>) is a <strong>read-only blog</strong>. We do not collect personal information from visitors.
             </p>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-slate-900">What We Don't Do</h3>
+            <h3 className="text-xl font-semibold text-slate-900">What We Don&apos;t Do</h3>
             <ul className="space-y-2 text-slate-600 list-none">
               <li>❌ No login required</li>
               <li>❌ No email collection</li>
               <li>❌ No comments section</li>
               <li>❌ No contact forms</li>
               <li>❌ No personal data collection</li>
+              <li>❌ No first-party cookies</li>
             </ul>
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-slate-900">Website Analytics (Optional)</h3>
+            <h3 className="text-xl font-semibold text-slate-900">Website Analytics</h3>
             <p className="text-slate-600 leading-relaxed">
-              We may use <strong>Google Analytics</strong> to understand:
+              We use <strong>Google Analytics</strong> to understand how visitors interact with this site. Google Analytics automatically collects the following information when you visit:
             </p>
             <ul className="space-y-2 text-slate-600 list-disc pl-5">
-              <li>How many people visit our site</li>
+              <li>Number of visitors and page views</li>
               <li>Which articles are popular</li>
-              <li>General visitor location (country level only)</li>
+              <li>Approximate visitor location (country and city level)</li>
+              <li>Device type, browser, and operating system</li>
+              <li>Time spent on pages and referral sources</li>
             </ul>
             <p className="text-slate-600 leading-relaxed">
-              You can:
+              This data is <strong>anonymous and aggregated</strong> — it cannot be used to identify you personally. It is used solely to improve the content and experience on this blog.
             </p>
+            <p className="text-slate-600 leading-relaxed">
+              Google Analytics places cookies in your browser to collect this data. We do not place any cookies ourselves.
+            </p>
+            <p className="text-slate-600 leading-relaxed">You can opt out by:</p>
             <ul className="space-y-2 text-slate-600 list-disc pl-5">
-              <li>Opt out by disabling cookies in your browser</li>
-              <li>Use a privacy extension like uBlock Origin</li>
+              <li>Disabling cookies in your browser settings</li>
+              <li>
+                Installing the{" "}
+                <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noreferrer" className="text-indigo-600 hover:text-indigo-800 transition-colors">
+                  Google Analytics Opt-Out Extension
+                </a>
+              </li>
+              <li>Using a privacy extension like uBlock Origin</li>
             </ul>
             <p className="text-slate-600 leading-relaxed">
+              For full details, see{" "}
               <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer" className="text-indigo-600 hover:text-indigo-800 transition-colors">
-                Google Analytics Privacy Policy
-              </a>
+                Google&apos;s Privacy Policy
+              </a>.
             </p>
           </div>
 
           <div className="space-y-4">
             <h3 className="text-xl font-semibold text-slate-900">Cookies</h3>
             <p className="text-slate-600 leading-relaxed">
-              We may use cookies for:
-            </p>
-            <ul className="space-y-2 text-slate-600 list-disc pl-5">
-              <li>Page theme preference (light/dark mode)</li>
-              <li>Basic website functionality</li>
-            </ul>
-            <p className="text-slate-600 leading-relaxed">
-              You can delete cookies anytime in your browser settings.
+              We do not use any first-party cookies. The only cookies present on this site are those set by Google Analytics as described above. You can delete or block these anytime through your browser settings.
             </p>
           </div>
 
           <div className="space-y-4">
             <h3 className="text-xl font-semibold text-slate-900">Third-Party Links</h3>
             <p className="text-slate-600 leading-relaxed">
-              Our blog may link to external websites. We&apos;re not responsible for their privacy practices.
+              Our blog may link to external websites. We are not responsible for the privacy practices or content of those sites. We encourage you to review their privacy policies before interacting with them.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-slate-900">Changes to This Policy</h3>
+            <p className="text-slate-600 leading-relaxed">
+              We may update this Privacy Policy occasionally. Any changes will be reflected in the &quot;Last Updated&quot; date at the top of this page.
             </p>
           </div>
 
@@ -120,12 +134,15 @@ export default function PrivacyPage() {
             <p className="text-slate-600 leading-relaxed">
               For privacy questions:
               <br />
-              <strong>Email:</strong> <a href="mailto:emp.ccreator@gmail.com" className="text-indigo-600 hover:text-indigo-800 transition-colors">emp.ccreator@gmail.com</a>
+              <strong>Email:</strong>{" "}
+              <a href="mailto:emp.ccreator@gmail.com" className="text-indigo-600 hover:text-indigo-800 transition-colors">
+                emp.ccreator@gmail.com
+              </a>
             </p>
           </div>
 
           <p className="text-sm text-slate-500 italic">
-            That&apos;s it. We keep it simple because we don&apos;t collect data.
+            That&apos;s it. We keep it simple because we don&apos;t collect your data.
           </p>
         </div>
       </main>
@@ -136,12 +153,17 @@ export default function PrivacyPage() {
             <span className="text-white font-bold tracking-tight text-lg">TechBasics</span>
             <p className="text-xs text-slate-500">© {new Date().getFullYear()} TechBasics.online. All rights reserved.</p>
             <p className="text-xs text-slate-500">
-              Email: <a href="mailto:emp.ccreator@gmail.com" className="text-slate-300 hover:text-white transition-colors">emp.ccreator@gmail.com</a>
+              Email:{" "}
+              <a href="mailto:emp.ccreator@gmail.com" className="text-slate-300 hover:text-white transition-colors">
+                emp.ccreator@gmail.com
+              </a>
             </p>
           </div>
           <div className="flex gap-6 text-xs font-medium">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <Link href="/privacy" className="text-white hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/about" className="hover:text-white transition-colors">About</Link>
+            <Link href="/privacy-policy" className="text-white hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </div>
       </footer>
