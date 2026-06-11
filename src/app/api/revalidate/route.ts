@@ -53,6 +53,10 @@ export async function POST(request: NextRequest) {
       revalidated.push("/");
     }
 
+    // Always revalidate the sitemap so new/updated posts appear immediately
+    revalidatePath("/sitemap.xml");
+    revalidated.push("/sitemap.xml");
+
     return NextResponse.json(
       {
         revalidated: true,
