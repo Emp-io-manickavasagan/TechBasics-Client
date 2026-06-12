@@ -56,6 +56,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <head>
+        {/* RSS feed autodiscovery — lets browsers and feed readers find the feed */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="TechBasics RSS Feed"
+          href="https://www.techbasics.online/feed.xml"
+        />
         {/* Preconnect to Firebase & Google APIs for faster first Firestore call */}
         <link rel="preconnect" href="https://firestore.googleapis.com" />
         <link rel="preconnect" href="https://www.googleapis.com" />
