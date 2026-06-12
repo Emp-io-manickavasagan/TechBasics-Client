@@ -1,8 +1,10 @@
 import { MetadataRoute } from 'next';
-import { getPosts } from '@/lib/db';
+import { getPostsServer } from '@/lib/db';
 
-// Revalidate every hour — so Google sees new posts quickly after publishing
-export const revalidate = 3600;
+// Always fetch fresh data — never use a stale build-time snapshot.
+// The Firestore REST call inside getPostsServer uses cache: "no-store",
+// so every sitemap request hits Firestore directly and returns current posts.
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.techbasics.online')
@@ -10,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .replace(/\/+$/, '');
 
   try {
-    const posts = await getPosts();
+    const posts = await getPostsServer();
 
     const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
       url: `${baseUrl}/${post.slug}`,
@@ -58,4 +60,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
   }
 }
-

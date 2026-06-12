@@ -8,6 +8,70 @@ import {
   orderBy,
 } from "firebase/firestore";
 
+// ─── Server-side Firestore REST fetch (no browser SDK / no localStorage) ──
+// Used by sitemap.ts and any server-only route that needs posts without
+// relying on the client Firebase SDK or browser APIs.
+export const getPostsServer = async (): Promise<BlogPost[]> => {
+  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  if (!projectId) {
+    console.warn("[getPostsServer] NEXT_PUBLIC_FIREBASE_PROJECT_ID is not set.");
+    return [];
+  }
+
+  const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/posts?pageSize=300`;
+
+  try {
+    const res = await fetch(url, {
+      // Always bypass any Next.js fetch cache — sitemap must be current
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      console.error(`[getPostsServer] Firestore REST error: ${res.status} ${res.statusText}`);
+      return [];
+    }
+
+    const json = await res.json();
+    const documents: any[] = json.documents ?? [];
+
+    const posts: BlogPost[] = documents.map((firestoreDoc: any) => {
+      const fields = firestoreDoc.fields ?? {};
+
+      // Helper: extract a typed value from a Firestore field object
+      const str = (f: any): string => f?.stringValue ?? "";
+      const arr = (f: any): string[] =>
+        f?.arrayValue?.values?.map((v: any) => v.stringValue ?? "") ?? [];
+      const bool = (f: any, def = false): boolean =>
+        f?.booleanValue !== undefined ? f.booleanValue : def;
+
+      // Derive id from the document name: "projects/.../documents/posts/<id>"
+      const id = firestoreDoc.name?.split("/").pop() ?? "";
+
+      return {
+        id,
+        title: str(fields.title),
+        slug: str(fields.slug) || id,
+        content: str(fields.content),
+        excerpt: str(fields.excerpt),
+        tags: arr(fields.tags),
+        category: str(fields.category),
+        createdAt: str(fields.createdAt),
+        updatedAt: str(fields.updatedAt),
+        featuredImage: str(fields.featuredImage),
+        metaDescription: str(fields.metaDescription),
+        metaKeywords: arr(fields.metaKeywords),
+        recommended: bool(fields.recommended),
+        visible: bool(fields.visible, true),
+      };
+    });
+
+    return posts.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+  } catch (err) {
+    console.error("[getPostsServer] Failed to fetch posts:", err);
+    return [];
+  }
+};
+
 export interface BlogPost {
   id: string;
   title: string;
