@@ -28,6 +28,14 @@ export const metadata: Metadata = {
     siteName: "TechBasics",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "https://www.techbasics.online/logo.png",
+        width: 512,
+        height: 512,
+        alt: "TechBasics Logo",
+      },
+    ],
   },
   icons: {
     icon: "/icon.ico",

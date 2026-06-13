@@ -156,7 +156,7 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
           </Link>
 
           {/* Navbar Search Bar */}
-          <div className="hidden sm:flex flex-1 max-w-md mx-6 relative">
+          <div className="hidden sm:flex w-48 mx-4 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
             <input
               id="navbar-search-input"
