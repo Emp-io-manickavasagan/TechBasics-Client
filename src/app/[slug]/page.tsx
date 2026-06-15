@@ -237,13 +237,21 @@ export default async function PostPage({ params }: PageProps) {
 
         {/* Featured Image */}
         {post.featuredImage && (
-          <div className="relative h-[250px] sm:h-[400px] w-full overflow-hidden rounded-3xl border border-slate-100 shadow-lg">
+          <div className="relative h-[350px] sm:h-[500px] w-full overflow-hidden rounded-3xl border border-slate-100 shadow-lg group bg-slate-900 flex items-center justify-center">
+            {/* Blurred Background Layer */}
+            <img
+              src={post.featuredImage}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover opacity-50 blur-2xl scale-110"
+              aria-hidden="true"
+            />
+            {/* Main Crisp Image */}
             <img
               src={post.featuredImage}
               alt={post.title}
               fetchPriority="high"
               decoding="async"
-              className="object-cover w-full h-full"
+              className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 p-4 drop-shadow-2xl"
             />
           </div>
         )}
