@@ -62,6 +62,7 @@ export const getPostsServer = async (): Promise<BlogPost[]> => {
         metaKeywords: arr(fields.metaKeywords),
         recommended: bool(fields.recommended),
         visible: bool(fields.visible, true),
+        mostPeopleAsked: str(fields.mostPeopleAsked) || undefined,
       };
     });
 
@@ -87,6 +88,7 @@ export interface BlogPost {
   metaKeywords: string[];
   recommended?: boolean;
   visible?: boolean;
+  mostPeopleAsked?: string;
 }
 
 const LOCAL_KEY = "techbasics_local_posts";

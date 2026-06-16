@@ -14,7 +14,7 @@ interface TocGroup extends TocItem {
   children: TocItem[];
 }
 
-export default function TableOfContents({ content }: { content: string }) {
+export default function TableOfContents({ content, faqContent }: { content: string; faqContent?: string }) {
   const [activeId, setActiveId] = useState<string>("");
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const tocContainerRef = useRef<HTMLDivElement>(null);
@@ -110,6 +110,11 @@ export default function TableOfContents({ content }: { content: string }) {
       return next;
     });
   };
+
+  // Append FAQ entry if faqContent exists
+  if (faqContent && faqContent.trim()) {
+    groupedHeadings.push({ id: "most-people-asked", title: "Most People Asked", level: 2, children: [] });
+  }
 
   if (groupedHeadings.length === 0) return null;
 

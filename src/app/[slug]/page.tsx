@@ -212,7 +212,7 @@ export default async function PostPage({ params }: PageProps) {
       <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 flex flex-col xl:flex-row gap-6 lg:gap-10 w-full relative">
         {/* Table of Contents (Left Sidebar) */}
         <aside className="hidden xl:block w-56 flex-shrink-0 self-start sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-hide">
-          <TableOfContents content={post.content} />
+          <TableOfContents content={post.content} faqContent={post.mostPeopleAsked} />
         </aside>
 
         {/* Article Content */}
@@ -272,7 +272,7 @@ export default async function PostPage({ params }: PageProps) {
 
         {/* Most People Asked FAQ Accordion */}
         {post.mostPeopleAsked && post.mostPeopleAsked.trim() && (
-          <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
+          <div id="most-people-asked" className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
             <FaqAccordion content={post.mostPeopleAsked} />
           </div>
         )}
