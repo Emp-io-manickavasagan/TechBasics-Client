@@ -13,6 +13,7 @@ import { getPostsServer, getPostBySlugServer } from "../../lib/db-server";
 import { ScrollProgressBar, CopyLinkButton } from "../components/PostInteractions";
 import MarkdownRenderer from "../components/MarkdownRenderer";
 import TableOfContents from "../components/TableOfContents";
+import FaqAccordion from "../components/FaqAccordion";
 
 // ─── Static Site Generation ────────────────────────────────────────────────
 // Revalidate every 60 seconds (ISR) — pages are generated at build time via
@@ -268,6 +269,13 @@ export default async function PostPage({ params }: PageProps) {
         <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-sm overflow-hidden">
           <MarkdownRenderer content={post.content} />
         </div>
+
+        {/* Most People Asked FAQ Accordion */}
+        {post.mostPeopleAsked && post.mostPeopleAsked.trim() && (
+          <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
+            <FaqAccordion content={post.mostPeopleAsked} />
+          </div>
+        )}
 
         {/* Footer info & tags */}
         <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-slate-200">

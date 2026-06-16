@@ -16,6 +16,7 @@ export interface BlogPost {
   metaKeywords: string[];
   recommended?: boolean;
   visible?: boolean;
+  mostPeopleAsked?: string;
 }
 
 // ─── Firebase config (from environment variables) ──────────────────────────

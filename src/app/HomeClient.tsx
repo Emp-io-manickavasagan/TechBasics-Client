@@ -397,11 +397,11 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
                     >
                       <div className="flex flex-col sm:flex-row items-start gap-5">
                         {post.featuredImage ? (
-                          <div className="w-full sm:w-36 h-28 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0">
+                          <div className="w-full sm:w-36 h-28 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
                             <img src={post.featuredImage} alt={post.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
                           </div>
                         ) : (
-                          <div className="w-full sm:w-36 h-28 rounded-3xl bg-slate-100 flex-shrink-0" />
+                          <div className="w-full sm:w-36 h-28 rounded-xl bg-slate-100 flex-shrink-0" />
                         )}
                         <div className="flex-1 space-y-3">
                           <h3 className="text-2xl font-bold text-slate-900 line-clamp-2">{post.title}</h3>
@@ -441,11 +441,11 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
                 {topFive.map((post) => (
                   <article key={post.id} className="group bg-white rounded-3xl border border-slate-100 hover:shadow-lg p-6 min-h-[190px] flex flex-col sm:flex-row items-start gap-6">
                     {post.featuredImage ? (
-                      <div className="w-full sm:w-44 h-36 overflow-hidden rounded-3xl flex-shrink-0 bg-slate-100">
+                      <div className="w-full sm:w-44 h-36 overflow-hidden rounded-xl flex-shrink-0 bg-slate-100">
                         <img src={post.featuredImage} alt={post.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
                       </div>
                     ) : (
-                      <div className="w-full sm:w-44 h-36 rounded-3xl bg-slate-100 flex-shrink-0" />
+                      <div className="w-full sm:w-44 h-36 rounded-xl bg-slate-100 flex-shrink-0" />
                     )}
 
                     <div className="flex-1 space-y-3">
@@ -506,11 +506,11 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
                 >
                   <div className="flex flex-col sm:flex-row items-start gap-4">
                     {p.featuredImage ? (
-                      <div className="w-full sm:w-28 h-24 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0">
+                      <div className="w-full sm:w-28 h-24 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
                         <img src={p.featuredImage} alt={p.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
                       </div>
                     ) : (
-                      <div className="w-full sm:w-28 h-24 rounded-3xl bg-slate-100 flex-shrink-0" />
+                      <div className="w-full sm:w-28 h-24 rounded-xl bg-slate-100 flex-shrink-0" />
                     )}
                     <div className="flex-1 space-y-3">
                       <div className="font-semibold text-slate-900 text-lg line-clamp-2">{p.title}</div>
@@ -568,11 +568,11 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
             <Link key={p.id} href={`/${p.slug}`} className="block bg-white rounded-3xl border border-slate-100 p-8 hover:shadow-xl transition-shadow duration-200 h-full">
               <div className="flex flex-col sm:flex-row items-start gap-5">
                 {p.featuredImage ? (
-                  <div className="w-full sm:w-32 h-28 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0">
+                  <div className="w-full sm:w-32 h-28 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
                     <img src={p.featuredImage} alt={p.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
                   </div>
                 ) : (
-                  <div className="w-full sm:w-32 h-28 rounded-3xl bg-slate-100 flex-shrink-0" />
+                  <div className="w-full sm:w-32 h-28 rounded-xl bg-slate-100 flex-shrink-0" />
                 )}
                 <div className="flex-1 space-y-3">
                   <div className="font-semibold text-slate-900 text-xl line-clamp-2">{p.title}</div>
