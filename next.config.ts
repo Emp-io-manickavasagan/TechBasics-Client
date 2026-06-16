@@ -53,13 +53,7 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      {
-        // Cache Next.js static chunks for 1 year (they have content hashes)
-        source: "/_next/static/(.*)",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
+
       {
         // Cache public assets (logo, images) for 7 days
         source: "/(.*)\\.(svg|png|ico|jpg|jpeg|webp|avif|woff2|woff)",

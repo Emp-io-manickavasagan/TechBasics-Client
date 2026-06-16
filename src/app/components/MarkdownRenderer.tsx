@@ -2,6 +2,7 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeSlug from "rehype-slug";
 
 interface MarkdownRendererProps {
   content: string;
@@ -16,6 +17,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     <div className="prose prose-slate max-w-none break-words">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeSlug]}
         components={{
           h1: ({ node, ...props }) => (
             <h1 className="text-3xl font-extrabold text-slate-900 mt-8 mb-4 border-b border-slate-100 pb-2" {...props} />

@@ -12,6 +12,7 @@ import {
 import { getPostsServer, getPostBySlugServer } from "../../lib/db-server";
 import { ScrollProgressBar, CopyLinkButton } from "../components/PostInteractions";
 import MarkdownRenderer from "../components/MarkdownRenderer";
+import TableOfContents from "../components/TableOfContents";
 
 // ─── Static Site Generation ────────────────────────────────────────────────
 // Revalidate every 60 seconds (ISR) — pages are generated at build time via
@@ -166,7 +167,7 @@ export default async function PostPage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-800 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50/50 text-slate-800 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
@@ -206,8 +207,15 @@ export default async function PostPage({ params }: PageProps) {
         </div>
       </header>
 
-      {/* Article Content */}
-      <article className="flex-1 max-w-4xl mx-auto px-3 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-8 w-full">
+      {/* Main Container for TOC + Article */}
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 flex flex-col xl:flex-row gap-6 lg:gap-10 w-full relative">
+        {/* Table of Contents (Left Sidebar) */}
+        <aside className="hidden xl:block w-56 flex-shrink-0 self-start sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-hide">
+          <TableOfContents content={post.content} />
+        </aside>
+
+        {/* Article Content */}
+        <article className="flex-1 max-w-4xl w-full min-w-0 space-y-6 sm:space-y-8">
 
         {/* Meta Header */}
         <div className="space-y-4 text-center sm:text-left">
@@ -286,50 +294,50 @@ export default async function PostPage({ params }: PageProps) {
           </Link>
         </div>
 
-      </article>
-
-
-      {/* Author Bio */}
-      <div className="max-w-4xl mx-auto px-3 sm:px-6 w-full">
-        <div className="flex items-start gap-4 bg-white border border-slate-100 rounded-2xl p-5 sm:p-6 shadow-sm">
-          <div className="flex-shrink-0 h-12 w-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg select-none">
-            M
-          </div>
-          <div className="space-y-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-bold text-slate-900">Manickavasagan</span>
-              <span className="text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 font-semibold">Author</span>
+        {/* Author Bio */}
+        <div className="w-full mt-10">
+          <div className="flex items-start gap-4 bg-white border border-slate-100 rounded-2xl p-5 sm:p-6 shadow-sm">
+            <div className="flex-shrink-0 h-12 w-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg select-none">
+              M
             </div>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              CS student and builder writing about tech, startups, AI, and productivity. Built a SaaS that didn&apos;t ship — walked away with real product experience instead. Sharing everything learned along the way.
-            </p>
+            <div className="space-y-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-bold text-slate-900">Manickavasagan</span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 font-semibold">Author</span>
+              </div>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                CS student and builder writing about tech, startups, AI, and productivity. Built a SaaS that didn&apos;t ship — walked away with real product experience instead. Sharing everything learned along the way.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Recommended Articles */}
-      {recommendedPosts.length > 0 && (
-        <section className="max-w-4xl mx-auto px-3 sm:px-6 py-10 border-t border-slate-200 w-full">
-          <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-            <Bookmark className="h-5 w-5 text-indigo-500" />
-            Recommended Articles
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {recommendedPosts.map((rec) => (
-              <Link key={rec.id} href={`/${rec.slug}`} className="group block space-y-3">
-                {rec.featuredImage ? (
-                  <div className="w-full h-32 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
-                    <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
-                  </div>
-                ) : (
-                  <div className="w-full h-32 rounded-2xl bg-slate-100 border border-slate-100" />
-                )}
-                <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-sm">{rec.title}</h4>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+        {/* Recommended Articles */}
+        {recommendedPosts.length > 0 && (
+          <section className="py-10 mt-10 border-t border-slate-200 w-full">
+            <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <Bookmark className="h-5 w-5 text-indigo-500" />
+              Recommended Articles
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recommendedPosts.map((rec) => (
+                <Link key={rec.id} href={`/${rec.slug}`} className="group block space-y-3">
+                  {rec.featuredImage ? (
+                    <div className="w-full h-32 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
+                      <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                    </div>
+                  ) : (
+                    <div className="w-full h-32 rounded-2xl bg-slate-100 border border-slate-100" />
+                  )}
+                  <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-sm">{rec.title}</h4>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        </article>
+      </div>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 mt-12 sm:mt-20 border-t border-slate-800 py-8 sm:py-12">
