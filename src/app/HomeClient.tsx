@@ -606,11 +606,24 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
               Email: <a href="mailto:emp.ccreator@gmail.com" className="text-slate-300 hover:text-white transition-colors">emp.ccreator@gmail.com</a>
             </p>
           </div>
-          <div className="flex gap-6 text-xs font-medium">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <Link href="/about" className="hover:text-white transition-colors">About</Link>
-            <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
+          <div className="flex flex-col items-center sm:items-end gap-4">
+            {/* Blogarama Badge */}
+            <a
+              href="http://www.blogarama.com/fashion-blogs/1351624-blog/"
+              title="Blogarama.com - Follow me on Blogarama"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-all text-[11px] font-semibold tracking-wide"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 inline-block" />
+              Listed on Blogarama
+            </a>
+            <div className="flex gap-6 text-xs font-medium">
+              <Link href="/" className="hover:text-white transition-colors">Home</Link>
+              <Link href="/about" className="hover:text-white transition-colors">About</Link>
+              <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
+            </div>
           </div>
         </div>
       </footer>
