@@ -68,8 +68,6 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
     sortOrder !== "newest",
   ].filter(Boolean).length;
 
-
-
   // Parse a date string (YYYY-MM-DD or ISO) safely in LOCAL time to avoid
   // UTC-midnight timezone shifts (e.g. IST +05:30 turns May 23 into May 22).
   const parseLocalDate = (dateStr: string): number => {
@@ -81,6 +79,20 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
   };
 
   const visiblePosts = posts.filter((post) => post.visible !== false);
+
+  // Single sorted source of truth — every section below derives from this
+  // and slices/excludes rather than re-sorting independently.
+  const sortedVisiblePosts = [...visiblePosts].sort((a, b) => {
+    const da = parseLocalDate(a.createdAt);
+    const db = parseLocalDate(b.createdAt);
+    return db - da;
+  });
+
+  const filterActive =
+    searchQuery.trim() !== "" ||
+    selectedCategory !== "All" ||
+    selectedTag !== "All" ||
+    sortOrder !== "newest";
 
   const filteredPosts = visiblePosts
     .filter((post) => {
@@ -101,20 +113,17 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
       return sortOrder === "newest" ? db - da : da - db;
     });
 
-  const filterActive =
-    searchQuery.trim() !== "" ||
-    selectedCategory !== "All" ||
-    selectedTag !== "All" ||
-    sortOrder !== "newest";
-
-  const sortedVisiblePosts = [...visiblePosts].sort((a, b) => {
-    const da = parseLocalDate(a.createdAt);
-    const db = parseLocalDate(b.createdAt);
-    return db - da;
-  });
-
+  // Latest strip: top 5 most recent posts (unfiltered view only)
   const topFive = sortedVisiblePosts.slice(0, 5);
-  const recommendedPosts = sortedVisiblePosts.filter((p) => (p as any).recommended).slice(0, 5);
+  const topFiveIds = new Set(topFive.map((p) => p.id));
+
+  // Recommended rail: curated picks, excluding anything already in the Latest strip
+  const recommendedPosts = sortedVisiblePosts
+    .filter((p) => (p as any).recommended && !topFiveIds.has(p.id))
+    .slice(0, 5);
+
+  // All Articles: the full list, so every published post is always browsable here
+  // regardless of whether it also appears in Latest or Recommended above.
   const allArticlesPosts = sortedVisiblePosts;
 
   return (
@@ -142,10 +151,10 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
 
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
-        <div className="w-full lg:w-[60%] max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
+          <Link href="/" className="flex items-center gap-3 group shrink-0">
             <div className="relative h-12 w-12 flex items-center justify-center rounded-2xl overflow-hidden shadow-inner group-hover:scale-105 transition-transform duration-300">
               <Image src="/logo.svg" alt="TechBasics Logo" width={40} height={40} className="object-contain rounded-lg" priority />
             </div>
@@ -156,7 +165,7 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
           </Link>
 
           {/* Navbar Search Bar */}
-          <div className="hidden sm:flex w-48 mx-4 relative">
+          <div className="hidden sm:flex flex-1 max-w-sm relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
             <input
               id="navbar-search-input"
@@ -177,24 +186,22 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
           </div>
 
           {/* Navbar Filter Dropdown */}
-          <div className="relative" ref={filterRef}>
+          <div className="relative shrink-0" ref={filterRef}>
             <button
               id="navbar-filter-btn"
               onClick={() => setFilterOpen((o) => !o)}
               aria-expanded={filterOpen}
               aria-haspopup="true"
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition-all duration-200 ${
-                filterOpen
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition-all duration-200 ${filterOpen
                   ? "bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-200"
                   : "bg-white border-slate-200 text-slate-700 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50"
-              }`}
+                }`}
             >
               <Filter className="h-4 w-4" />
               <span className="hidden sm:inline">Filters</span>
               {activeFilterCount > 0 && (
-                <span className={`flex items-center justify-center h-5 w-5 rounded-full text-[10px] font-bold ${
-                  filterOpen ? "bg-white text-indigo-600" : "bg-indigo-600 text-white"
-                }`}>
+                <span className={`flex items-center justify-center h-5 w-5 rounded-full text-[10px] font-bold ${filterOpen ? "bg-white text-indigo-600" : "bg-indigo-600 text-white"
+                  }`}>
                   {activeFilterCount}
                 </span>
               )}
@@ -245,11 +252,10 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
                         <button
                           key={cat}
                           onClick={() => setSelectedCategory(cat)}
-                          className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                            selectedCategory === cat
+                          className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-all ${selectedCategory === cat
                               ? "bg-indigo-50 text-indigo-700 border-l-4 border-indigo-600"
                               : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                          }`}
+                            }`}
                         >
                           {cat}
                         </button>
@@ -268,11 +274,10 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
                         <button
                           key={tag}
                           onClick={() => setSelectedTag(tag)}
-                          className={`px-3 py-1 rounded-lg text-xs font-medium border transition-all ${
-                            selectedTag === tag
+                          className={`px-3 py-1 rounded-lg text-xs font-medium border transition-all ${selectedTag === tag
                               ? "bg-indigo-600 border-indigo-600 text-white shadow-sm"
                               : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300"
-                          }`}
+                            }`}
                         >
                           {tag}
                         </button>
@@ -291,11 +296,10 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
                         <button
                           key={order}
                           onClick={() => setSortOrder(order)}
-                          className={`py-2 text-xs font-semibold rounded-xl border transition-all ${
-                            sortOrder === order
+                          className={`py-2 text-xs font-semibold rounded-xl border transition-all ${sortOrder === order
                               ? "bg-slate-900 border-slate-900 text-white shadow-sm"
                               : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-                          }`}
+                            }`}
                         >
                           {order === "newest" ? "⬇ Newest" : "⬆ Oldest"}
                         </button>
@@ -361,67 +365,46 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
         </section>
       )}
 
-      {/* (Removed duplicate hero filter — navbar filter retained) */}
-
       {/* Main */}
-      <main className="w-full lg:w-[60%] max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1">
-        <section className="space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left: Latest Articles (Top 5) */}
-          <div className="lg:col-span-2 space-y-6">
-            {filterActive && filteredPosts.length > 0 && (
-              <section className="bg-slate-50 rounded-3xl border border-slate-200 p-6 mb-6">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                  <div>
-                    <h2 className="text-xl font-bold text-slate-900">Search Results</h2>
-                    <p className="text-sm text-slate-500">Showing articles that match your search or selected filters.</p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSelectedCategory("All");
-                      setSelectedTag("All");
-                      setSortOrder("newest");
-                    }}
-                    className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 transition"
-                  >
-                    Clear filters
-                  </button>
-                </div>
-                <div className="grid grid-cols-1 gap-4">
-                  {filteredPosts.map((post) => (
-                    <Link
-                      href={`/${post.slug}`}
-                      key={post.id}
-                      className="block bg-white rounded-3xl border border-slate-100 p-6 hover:shadow-lg transition-shadow duration-200"
-                    >
-                      <div className="flex flex-col sm:flex-row items-start gap-5">
-                        {post.featuredImage ? (
-                          <div className="w-full sm:w-36 h-28 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
-                            <img src={post.featuredImage} alt={post.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
-                          </div>
-                        ) : (
-                          <div className="w-full sm:w-36 h-28 rounded-xl bg-slate-100 flex-shrink-0" />
-                        )}
-                        <div className="flex-1 space-y-3">
-                          <h3 className="text-2xl font-bold text-slate-900 line-clamp-2">{post.title}</h3>
-                          <p className="text-sm text-slate-500 leading-relaxed line-clamp-3">{post.excerpt}</p>
-                          <div className="flex flex-wrap gap-2 text-xs text-slate-400">
-                            <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />5 min read</span>
-                            {post.tags && post.tags.slice(0, 3).map((tag) => (
-                              <span key={tag} className="px-2 py-0.5 bg-slate-50 border border-slate-100 rounded text-[10px] font-medium text-slate-500">#{tag}</span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </section>
-            )}
-            <h2 className="text-xl font-bold text-slate-900">Latest Articles (Top 5)</h2>
+      <main className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1">
 
-            {/* Loading skeletons */}
+        {/* Database error */}
+        {error && (
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex items-start gap-4 mb-8">
+            <AlertTriangle className="h-6 w-6 text-amber-500 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <h3 className="font-bold text-amber-900 text-sm">Database Not Connected</h3>
+              <p className="text-amber-700 text-sm leading-relaxed">Firebase is not configured. Please check your connection and try again.</p>
+            </div>
+          </div>
+        )}
+
+        {/* ===== FILTERED VIEW =====
+            When a search/filter is active, this is the only content shown —
+            Latest, Recommended, and All Articles step aside so the person
+            isn't shown the same posts twice in different sections. */}
+        {filterActive ? (
+          <section className="space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Search Results</h2>
+                <p className="text-sm text-slate-500">
+                  {filteredPosts.length} article{filteredPosts.length !== 1 ? "s" : ""} matching your search or selected filters.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedCategory("All");
+                  setSelectedTag("All");
+                  setSortOrder("newest");
+                }}
+                className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100 transition shrink-0"
+              >
+                Clear filters
+              </button>
+            </div>
+
             {loading && !error && (
               <div className="space-y-6">
                 {[1, 2, 3].map((i) => (
@@ -435,37 +418,38 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
               </div>
             )}
 
-            {/* Top 5 compact list */}
-            {!loading && !error && topFive.length > 0 && (
-              <div className="space-y-4">
-                {topFive.map((post) => (
-                  <article key={post.id} className="group bg-white rounded-3xl border border-slate-100 hover:shadow-lg p-6 min-h-[190px] flex flex-col sm:flex-row items-start gap-6">
-                    {post.featuredImage ? (
-                      <div className="w-full sm:w-44 h-36 overflow-hidden rounded-xl flex-shrink-0 bg-slate-100">
-                        <img src={post.featuredImage} alt={post.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
-                      </div>
-                    ) : (
-                      <div className="w-full sm:w-44 h-36 rounded-xl bg-slate-100 flex-shrink-0" />
-                    )}
-
-                    <div className="flex-1 space-y-3">
-                      <Link href={`/${post.slug}`} className="block">
-                        <h3 className="text-2xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2">{post.title}</h3>
-                      </Link>
-                      <p className="text-slate-500 text-sm line-clamp-3">{post.excerpt}</p>
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
-                        <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />5 min read</span>
-                        {post.tags && post.tags.slice(0,3).map((t) => (
-                          <span key={t} className="px-2 py-0.5 bg-slate-50 border border-slate-100 rounded text-[10px] font-medium text-slate-500">#{t}</span>
-                        ))}
+            {!loading && !error && filteredPosts.length > 0 && (
+              <div className="grid grid-cols-1 gap-4">
+                {filteredPosts.map((post) => (
+                  <Link
+                    href={`/${post.slug}`}
+                    key={post.id}
+                    className="block bg-white rounded-3xl border border-slate-100 p-6 hover:shadow-lg transition-shadow duration-200"
+                  >
+                    <div className="flex flex-col sm:flex-row items-start gap-5">
+                      {post.featuredImage ? (
+                        <div className="w-full sm:w-36 h-28 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
+                          <img src={post.featuredImage} alt={post.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
+                        </div>
+                      ) : (
+                        <div className="w-full sm:w-36 h-28 rounded-xl bg-slate-100 flex-shrink-0" />
+                      )}
+                      <div className="flex-1 space-y-3">
+                        <h3 className="text-2xl font-bold text-slate-900 line-clamp-2">{post.title}</h3>
+                        <p className="text-sm text-slate-500 leading-relaxed line-clamp-3">{post.excerpt}</p>
+                        <div className="flex flex-wrap gap-2 text-xs text-slate-400">
+                          <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />5 min read</span>
+                          {post.tags && post.tags.slice(0, 3).map((tag) => (
+                            <span key={tag} className="px-2 py-0.5 bg-slate-50 border border-slate-100 rounded text-[10px] font-medium text-slate-500">#{tag}</span>
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </article>
+                  </Link>
                 ))}
               </div>
             )}
 
-            {/* Empty state when no posts */}
             {!loading && !error && filteredPosts.length === 0 && (
               <div className="bg-white text-center py-20 px-6 rounded-2xl border border-slate-100 shadow-sm max-w-xl mx-auto space-y-4">
                 <div className="h-16 w-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
@@ -473,116 +457,144 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">No Articles Found</h3>
                 <p className="text-slate-500 text-sm max-w-sm mx-auto">
-                  {posts.length === 0
-                    ? "No articles have been published yet. Check back soon!"
-                    : "No articles match your current filters. Try adjusting your search."}
+                  No articles match your current filters. Try adjusting your search.
                 </p>
-                {posts.length > 0 && (
-                  <button
-                    onClick={() => { setSearchQuery(""); setSelectedCategory("All"); setSelectedTag("All"); setSortOrder("newest"); }}
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition-all shadow-md shadow-indigo-100"
-                  >
-                    Reset Filters
-                  </button>
-                )}
+                <button
+                  onClick={() => { setSearchQuery(""); setSelectedCategory("All"); setSelectedTag("All"); setSortOrder("newest"); }}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition-all shadow-md shadow-indigo-100"
+                >
+                  Reset Filters
+                </button>
               </div>
             )}
-          </div>
+          </section>
+        ) : (
+          /* ===== DEFAULT VIEW =====
+             Latest (top 5) + Recommended sidebar, then All Articles below
+             contains only the remaining posts — nothing repeats. */
+          <section className="space-y-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left: Latest Articles (Top 5) */}
+              <div className="lg:col-span-2 space-y-6">
+                <h2 className="text-xl font-bold text-slate-900">Latest Articles</h2>
 
-          {/* Right: Recommended sidebar */}
-          <aside className="space-y-4">
-            <h3 className="text-lg font-bold text-slate-900">Recommended</h3>
-            <div className="grid grid-cols-1 gap-4">
-              {recommendedPosts.length === 0 && (
-                <div className="bg-white rounded-3xl border border-slate-100 p-6 text-sm text-slate-500">
-                  No recommended articles yet.
-                </div>
-              )}
-              {recommendedPosts.map((p) => (
-                <Link
-                  href={`/${p.slug}`}
-                  key={p.id}
-                  className="block bg-white rounded-3xl border border-slate-100 p-6 hover:shadow-lg transition-shadow duration-200"
-                >
-                  <div className="flex flex-col sm:flex-row items-start gap-4">
-                    {p.featuredImage ? (
-                      <div className="w-full sm:w-28 h-24 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
-                        <img src={p.featuredImage} alt={p.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
+                {loading && !error && (
+                  <div className="space-y-6">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4 animate-pulse">
+                        <div className="h-4 w-28 bg-slate-200 rounded" />
+                        <div className="h-6 w-3/4 bg-slate-200 rounded" />
+                        <div className="h-4 w-full bg-slate-200 rounded" />
+                        <div className="h-4 w-5/6 bg-slate-200 rounded" />
                       </div>
-                    ) : (
-                      <div className="w-full sm:w-28 h-24 rounded-xl bg-slate-100 flex-shrink-0" />
-                    )}
-                    <div className="flex-1 space-y-3">
-                      <div className="font-semibold text-slate-900 text-lg line-clamp-2">{p.title}</div>
-                      <div className="text-sm text-slate-500 leading-relaxed line-clamp-3">{p.excerpt.slice(0, 120)}{p.excerpt.length > 120 ? '...' : ''}</div>
-                      <div className="flex flex-wrap gap-1">
-                        {p.tags && p.tags.slice(0, 2).map((tag) => (
-                          <span key={tag} className="px-2 py-0.5 bg-slate-50 border border-slate-100 rounded text-[10px] font-medium text-slate-500">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                </Link>
-              ))}
-            </div>
-          </aside>
-        </div>
-
-          {/* Firebase not configured error */}
-          {error && (
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex items-start gap-4">
-              <AlertTriangle className="h-6 w-6 text-amber-500 shrink-0 mt-0.5" />
-              <div className="space-y-1">
-                <h3 className="font-bold text-amber-900 text-sm">Database Not Connected</h3>
-                <p className="text-amber-700 text-sm leading-relaxed">Firebase is not configured. Please check your connection and try again.</p>
-              </div>
-            </div>
-          )}
-
-          {/* Loading skeletons */}
-          {loading && !error && (
-            <div className="space-y-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4 animate-pulse">
-                  <div className="h-4 w-28 bg-slate-200 rounded" />
-                  <div className="h-6 w-3/4 bg-slate-200 rounded" />
-                  <div className="h-4 w-full bg-slate-200 rounded" />
-                  <div className="h-4 w-5/6 bg-slate-200 rounded" />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* (Removed duplicate empty-state — handled in left column) */}
-
-        </section>
-      </main>
-
-      {/* All Articles (divider above footer) */}
-      <section className="w-full lg:w-[60%] max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 border-t border-slate-200 pt-8">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">All Articles</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {allArticlesPosts.map((p) => (
-            <Link key={p.id} href={`/${p.slug}`} className="block bg-white rounded-3xl border border-slate-100 p-8 hover:shadow-xl transition-shadow duration-200 h-full">
-              <div className="flex flex-col sm:flex-row items-start gap-5">
-                {p.featuredImage ? (
-                  <div className="w-full sm:w-32 h-28 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
-                    <img src={p.featuredImage} alt={p.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
-                  </div>
-                ) : (
-                  <div className="w-full sm:w-32 h-28 rounded-xl bg-slate-100 flex-shrink-0" />
                 )}
-                <div className="flex-1 space-y-3">
-                  <div className="font-semibold text-slate-900 text-xl line-clamp-2">{p.title}</div>
-                  <div className="text-sm text-slate-500 leading-relaxed">{p.excerpt.slice(0, 130)}{p.excerpt.length > 130 ? '...' : ''}</div>
+
+                {!loading && !error && topFive.length > 0 && (
+                  <div className="space-y-4">
+                    {topFive.map((post) => (
+                      <article key={post.id} className="group bg-white rounded-3xl border border-slate-100 hover:shadow-lg p-6 min-h-[190px] flex flex-col sm:flex-row items-start gap-6">
+                        {post.featuredImage ? (
+                          <div className="w-full sm:w-44 h-36 overflow-hidden rounded-xl flex-shrink-0 bg-slate-100">
+                            <img src={post.featuredImage} alt={post.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                          </div>
+                        ) : (
+                          <div className="w-full sm:w-44 h-36 rounded-xl bg-slate-100 flex-shrink-0" />
+                        )}
+
+                        <div className="flex-1 space-y-3">
+                          <Link href={`/${post.slug}`} className="block">
+                            <h3 className="text-2xl font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2">{post.title}</h3>
+                          </Link>
+                          <p className="text-slate-500 text-sm line-clamp-3">{post.excerpt}</p>
+                          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                            <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" />5 min read</span>
+                            {post.tags && post.tags.slice(0, 3).map((t) => (
+                              <span key={t} className="px-2 py-0.5 bg-slate-50 border border-slate-100 rounded text-[10px] font-medium text-slate-500">#{t}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
+
+                {!loading && !error && posts.length === 0 && (
+                  <div className="bg-white text-center py-20 px-6 rounded-2xl border border-slate-100 shadow-sm max-w-xl mx-auto space-y-4">
+                    <div className="h-16 w-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
+                      <SlidersHorizontal className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900">No Articles Found</h3>
+                    <p className="text-slate-500 text-sm max-w-sm mx-auto">
+                      No articles have been published yet. Check back soon!
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Right: Recommended sidebar */}
+              <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+                <h3 className="text-lg font-bold text-slate-900">Recommended</h3>
+                <div className="grid grid-cols-1 gap-4">
+                  {recommendedPosts.length === 0 && (
+                    <div className="bg-white rounded-3xl border border-slate-100 p-6 text-sm text-slate-500">
+                      No recommended articles yet.
+                    </div>
+                  )}
+                  {recommendedPosts.map((p) => (
+                    <Link
+                      href={`/${p.slug}`}
+                      key={p.id}
+                      className="group block bg-white rounded-2xl border border-slate-100 p-3 hover:shadow-lg transition-shadow duration-200"
+                    >
+                      <div className="flex items-start gap-3">
+                        {p.featuredImage ? (
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                            <img src={p.featuredImage} alt={p.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                          </div>
+                        ) : (
+                          <div className="w-16 h-16 rounded-lg bg-slate-100 flex-shrink-0" />
+                        )}
+                        <div className="flex-1 space-y-1 min-w-0">
+                          <div className="font-semibold text-slate-900 text-sm leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">{p.title}</div>
+                          <div className="text-xs text-slate-500 leading-relaxed line-clamp-2">{p.excerpt.slice(0, 90)}{p.excerpt.length > 90 ? '...' : ''}</div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </aside>
+            </div>
+
+            {/* All Articles — full list, every published post stays browsable here */}
+            {!loading && !error && allArticlesPosts.length > 0 && (
+              <div className="border-t border-slate-200 pt-8">
+                <h3 className="text-lg font-bold text-slate-900 mb-4">All Articles</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {allArticlesPosts.map((p) => (
+                    <Link key={p.id} href={`/${p.slug}`} className="group block bg-white rounded-2xl border border-slate-100 p-4 hover:shadow-lg transition-shadow duration-200 h-full">
+                      <div className="flex items-start gap-4">
+                        {p.featuredImage ? (
+                          <div className="w-20 h-20 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                            <img src={p.featuredImage} alt={p.title} loading="lazy" decoding="async" className="object-cover w-full h-full" />
+                          </div>
+                        ) : (
+                          <div className="w-20 h-20 rounded-lg bg-slate-100 flex-shrink-0" />
+                        )}
+                        <div className="flex-1 space-y-1.5 min-w-0">
+                          <div className="font-semibold text-slate-900 text-sm leading-snug line-clamp-2 group-hover:text-indigo-600 transition-colors">{p.title}</div>
+                          <div className="text-xs text-slate-500 leading-relaxed line-clamp-2">{p.excerpt.slice(0, 110)}{p.excerpt.length > 110 ? '...' : ''}</div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+            )}
+          </section>
+        )}
+      </main>
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 mt-20 border-t border-slate-800 py-12">
