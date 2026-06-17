@@ -607,7 +607,7 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
             </p>
           </div>
           <div className="flex flex-col items-center sm:items-end gap-4">
-            {/* Blogarama Badge */}
+            {/* Blogarama Badge — exact text required for reciprocal link detection */}
             <a
               href="http://www.blogarama.com/fashion-blogs/1351624-blog/"
               title="Blogarama.com - Follow me on Blogarama"
@@ -616,7 +616,7 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500 transition-all text-[11px] font-semibold tracking-wide"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 inline-block" />
-              Listed on Blogarama
+              Blogarama - Blog Directory
             </a>
             <div className="flex gap-6 text-xs font-medium">
               <Link href="/" className="hover:text-white transition-colors">Home</Link>
