@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import GithubSlugger from "github-slugger";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown, List } from "lucide-react";
 
 interface TocItem {
   id: string;
@@ -14,10 +14,23 @@ interface TocGroup extends TocItem {
   children: TocItem[];
 }
 
-export default function TableOfContents({ content, faqContent }: { content: string; faqContent?: string }) {
+export default function TableOfContents({ content, faqContent, isMobileDropdown = false }: { content: string; faqContent?: string; isMobileDropdown?: boolean }) {
   const [activeId, setActiveId] = useState<string>("");
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [isOpen, setIsOpen] = useState(false);
   const tocContainerRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (tocContainerRef.current && !tocContainerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [isOpen]);
 
   // Compute headings synchronously so it SSRs
   const slugger = new GithubSlugger();
@@ -117,6 +130,84 @@ export default function TableOfContents({ content, faqContent }: { content: stri
   }
 
   if (groupedHeadings.length === 0) return null;
+
+  if (isMobileDropdown) {
+    return (
+      <div className="w-full relative" ref={tocContainerRef}>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border text-slate-700 transition-all cursor-pointer focus:outline-none shadow-sm ${
+            isOpen 
+              ? "bg-indigo-50/40 border-indigo-200 text-indigo-700" 
+              : "bg-slate-50 border-slate-200 hover:bg-slate-100/70 hover:border-slate-300 hover:text-slate-900"
+          }`}
+        >
+          <span className="flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-wide uppercase text-slate-500 hover:text-slate-800">
+            <List className={`h-4 w-4 ${isOpen ? "text-indigo-500" : "text-slate-400"}`} />
+            Show the Table Of Content
+          </span>
+          <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-200 flex-shrink-0 ${isOpen ? "rotate-180" : ""}`} />
+        </button>
+
+        {isOpen && (
+          <div className="absolute left-0 right-0 mt-2 p-2 bg-white border border-slate-200 rounded-2xl shadow-xl z-30 max-h-80 overflow-y-auto space-y-0.5 animate-fade-in">
+            {groupedHeadings.map((group) => {
+              return (
+                <div key={group.id} className="space-y-0.5">
+                  <a
+                    href={`#${group.id}`}
+                    className={`block w-full text-left px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                      activeId === group.id
+                        ? "bg-indigo-50 text-indigo-700 font-bold"
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById(group.id);
+                      if (el) {
+                        window.scrollTo({
+                          top: el.offsetTop - 80,
+                          behavior: "smooth",
+                        });
+                      }
+                      setIsOpen(false);
+                    }}
+                  >
+                    {group.title}
+                  </a>
+
+                  {group.children.map((child) => (
+                    <a
+                      key={child.id}
+                      href={`#${child.id}`}
+                      className={`block w-full text-left pl-7 pr-3 py-1.5 rounded-lg text-[11px] transition-all ${
+                        activeId === child.id
+                          ? "bg-indigo-50/50 text-indigo-600 font-bold"
+                          : "text-slate-400 hover:bg-slate-50/50 hover:text-slate-700"
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const el = document.getElementById(child.id);
+                        if (el) {
+                          window.scrollTo({
+                            top: el.offsetTop - 80,
+                            behavior: "smooth",
+                          });
+                        }
+                        setIsOpen(false);
+                      }}
+                    >
+                      {child.title}
+                    </a>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div ref={tocContainerRef} className="pr-2">

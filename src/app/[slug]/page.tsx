@@ -10,7 +10,7 @@ import {
   Bookmark,
 } from "lucide-react";
 import { getPostsServer, getPostBySlugServer } from "../../lib/db-server";
-import { ScrollProgressBar, CopyLinkButton } from "../components/PostInteractions";
+import { ScrollProgressBar, CopyLinkButton, BackToTopButton } from "../components/PostInteractions";
 import MarkdownRenderer from "../components/MarkdownRenderer";
 import TableOfContents from "../components/TableOfContents";
 import FaqAccordion from "../components/FaqAccordion";
@@ -182,9 +182,12 @@ export default async function PostPage({ params }: PageProps) {
       {/* Scroll Progress Bar (client component) */}
       <ScrollProgressBar />
 
+      {/* Back to Top Button (client component) */}
+      <BackToTopButton />
+
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-20 flex items-center justify-between gap-2">
+        <div className="max-w-[1750px] mx-auto px-3 sm:px-6 xl:px-16 h-14 sm:h-20 flex items-center justify-between gap-2">
           <Link href="/" className="flex items-center gap-1.5 sm:gap-2 text-slate-500 hover:text-indigo-600 font-semibold text-sm transition-all group flex-shrink-0">
             <ArrowLeft className="h-4 w-4 transform group-hover:-translate-x-0.5 transition-transform" />
             <span className="hidden sm:inline">Back to Articles</span>
@@ -209,142 +212,197 @@ export default async function PostPage({ params }: PageProps) {
       </header>
 
       {/* Main Container for TOC + Article */}
-      <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 flex flex-col xl:flex-row gap-6 lg:gap-10 w-full relative">
+      <div className="max-w-[1750px] mx-auto px-3 sm:px-6 xl:px-16 py-6 sm:py-10 flex flex-col xl:flex-row gap-6 lg:gap-10 w-full relative">
         {/* Table of Contents (Left Sidebar) */}
-        <aside className="hidden xl:block w-56 flex-shrink-0 self-start sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-hide">
+        <aside className="hidden xl:block w-52 flex-shrink-0 self-start sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-hide">
           <TableOfContents content={post.content} faqContent={post.mostPeopleAsked} />
         </aside>
 
-        {/* Article Content */}
-        <article className="flex-1 max-w-4xl w-full min-w-0 space-y-6 sm:space-y-8">
+        {/* Article Content (Middle Column) */}
+        <article className="flex-1 min-w-0 space-y-6 sm:space-y-8">
+          {/* Outer Box Enclosing Header Card and Main Content Card */}
+          <div className="xl:border xl:border-slate-200/80 xl:bg-slate-100/40 xl:rounded-[2rem] xl:p-6 space-y-6 sm:space-y-8">
+            
+            {/* Box 1: Header Card (Title, Meta description, Featured Image) */}
+            <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm space-y-5">
+              {/* Meta Header */}
+              <div className="space-y-4 text-center sm:text-left">
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold">
+                    <Folder className="h-3 w-3" />
+                    {post.category}
+                  </span>
+                  <span className="text-xs text-slate-400 font-medium flex items-center gap-1">
+                    <Calendar className="h-3.5 w-3.5 text-slate-300" />
+                    {new Date(post.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
 
-        {/* Meta Header */}
-        <div className="space-y-4 text-center sm:text-left">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-semibold">
-              <Folder className="h-3 w-3" />
-              {post.category}
-            </span>
-            <span className="text-xs text-slate-400 font-medium flex items-center gap-1">
-              <Calendar className="h-3.5 w-3.5 text-slate-300" />
-              {new Date(post.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </span>
-          </div>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+                  {post.title}
+                </h1>
 
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
-            {post.title}
-          </h1>
-
-          <p className="text-base sm:text-lg text-slate-500 leading-relaxed font-light italic border-l-4 border-indigo-100 pl-3 sm:pl-4 py-1">
-            {post.excerpt}
-          </p>
-        </div>
-
-        {/* Featured Image */}
-        {post.featuredImage && (
-          <div className="relative h-[350px] sm:h-[500px] w-full overflow-hidden rounded-3xl border border-slate-100 shadow-lg group bg-slate-900 flex items-center justify-center">
-            {/* Blurred Background Layer */}
-            <img
-              src={post.featuredImage}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover opacity-50 blur-2xl scale-110"
-              aria-hidden="true"
-            />
-            {/* Main Crisp Image */}
-            <img
-              src={post.featuredImage}
-              alt={post.title}
-              fetchPriority="high"
-              decoding="async"
-              className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 p-4 drop-shadow-2xl"
-            />
-          </div>
-        )}
-
-        {/* Content Area */}
-        <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-sm overflow-hidden">
-          <MarkdownRenderer content={post.content} />
-        </div>
-
-        {/* Most People Asked FAQ Accordion */}
-        {post.mostPeopleAsked && post.mostPeopleAsked.trim() && (
-          <div id="most-people-asked" className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
-            <FaqAccordion content={post.mostPeopleAsked} />
-          </div>
-        )}
-
-        {/* Footer info & tags */}
-        <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-slate-200">
-          <div className="flex items-start sm:items-center gap-2 flex-wrap">
-            <span className="text-xs text-slate-400 font-medium mt-1 sm:mt-0">Tags:</span>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {post.tags && post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-slate-100 border border-slate-200/50 text-[11px] sm:text-xs font-medium text-slate-600"
-                >
-                  <Tag className="h-3 w-3 text-slate-400" />
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
-          >
-            ← View all articles
-          </Link>
-        </div>
-
-        {/* Author Bio */}
-        <div className="w-full mt-10">
-          <div className="flex items-start gap-4 bg-white border border-slate-100 rounded-2xl p-5 sm:p-6 shadow-sm">
-            <div className="flex-shrink-0 h-12 w-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg select-none">
-              M
-            </div>
-            <div className="space-y-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-bold text-slate-900">Manickavasagan</span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 font-semibold">Author</span>
+                <p className="text-base sm:text-lg text-slate-500 leading-relaxed font-light italic border-l-4 border-indigo-100 pl-3 sm:pl-4 py-1">
+                  {post.metaDescription || post.excerpt}
+                </p>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                CS student and builder writing about tech, startups, AI, and productivity. Built a SaaS that didn&apos;t ship — walked away with real product experience instead. Sharing everything learned along the way.
-              </p>
+
+              {/* Featured Image */}
+              {post.featuredImage && (
+                <div className="relative h-[250px] sm:h-[400px] w-full overflow-hidden rounded-2xl border border-slate-100 shadow-md group bg-slate-900 flex items-center justify-center">
+                  {/* Blurred Background Layer */}
+                  <img
+                    src={post.featuredImage}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover opacity-50 blur-2xl scale-110"
+                    aria-hidden="true"
+                  />
+                  {/* Main Crisp Image */}
+                  <img
+                    src={post.featuredImage}
+                    alt={post.title}
+                    fetchPriority="high"
+                    decoding="async"
+                    className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-700 p-4 drop-shadow-2xl"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Table of Contents (Mobile Dropdown - visible below xl breakpoint) */}
+            <div className="xl:hidden">
+              <TableOfContents content={post.content} faqContent={post.mostPeopleAsked} isMobileDropdown={true} />
+            </div>
+
+            {/* Box 2: Main Blog Content */}
+            <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-sm overflow-hidden">
+              <MarkdownRenderer content={post.content} />
+            </div>
+
+          </div>
+
+          {/* Box 3: FAQ */}
+          {post.mostPeopleAsked && post.mostPeopleAsked.trim() && (
+            <div id="most-people-asked" className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
+              <FaqAccordion content={post.mostPeopleAsked} />
+            </div>
+          )}
+
+          {/* Footer info & tags */}
+          <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-slate-200">
+            <div className="flex items-start sm:items-center gap-2 flex-wrap">
+              <span className="text-xs text-slate-400 font-medium mt-1 sm:mt-0">Tags:</span>
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                {post.tags && post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-slate-100 border border-slate-200/50 text-[11px] sm:text-xs font-medium text-slate-600"
+                  >
+                    <Tag className="h-3 w-3 text-slate-400" />
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-800 transition-colors"
+            >
+              ← View all articles
+            </Link>
+          </div>
+
+          {/* Mobile-only Author Bio & Recommended Posts (stacked below FAQ) */}
+          <div className="xl:hidden w-full flex flex-col gap-6 mt-10">
+            {/* Author Bio Box */}
+            <div className="bg-white border border-slate-100 rounded-2xl p-5 sm:p-6 shadow-sm">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-base sm:text-lg select-none">
+                  M
+                </div>
+                <div className="space-y-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-xs sm:text-sm font-bold text-slate-900">Manickavasagan</span>
+                    <span className="text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 font-semibold">Author</span>
+                  </div>
+                  <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed">
+                    CS student and builder writing about tech, startups, AI, and productivity. Built a SaaS that didn&apos;t ship — walked away with real product experience instead. Sharing everything learned along the way.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Recommended Posts Box */}
+            {recommendedPosts.length > 0 && (
+              <div className="bg-white border border-slate-100 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col gap-4">
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                  <Bookmark className="h-4 w-4 text-indigo-500" />
+                  Recommended Posts
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {recommendedPosts.map((rec) => (
+                    <Link key={rec.id} href={`/${rec.slug}`} className="group block space-y-2">
+                      {rec.featuredImage && (
+                        <div className="w-full h-28 sm:h-32 rounded-xl overflow-hidden bg-slate-100 border border-slate-100">
+                          <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                        </div>
+                      )}
+                      <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-xs sm:text-sm leading-snug">{rec.title}</h4>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </article>
+
+        {/* Right Sidebar (PC Layout) */}
+        <aside className="hidden xl:flex flex-col gap-6 w-72 flex-shrink-0 self-start sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-hide">
+          {/* Author Bio Box */}
+          <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-base select-none">
+                M
+              </div>
+              <div className="space-y-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs font-bold text-slate-900">Manickavasagan</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 font-semibold">Author</span>
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  CS student and builder writing about tech, startups, AI, and productivity. Built a SaaS that didn&apos;t ship — walked away with real product experience.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Recommended Articles */}
-        {recommendedPosts.length > 0 && (
-          <section className="py-10 mt-10 border-t border-slate-200 w-full">
-            <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-              <Bookmark className="h-5 w-5 text-indigo-500" />
-              Recommended Articles
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recommendedPosts.map((rec) => (
-                <Link key={rec.id} href={`/${rec.slug}`} className="group block space-y-3">
-                  {rec.featuredImage ? (
-                    <div className="w-full h-32 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
-                      <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
-                    </div>
-                  ) : (
-                    <div className="w-full h-32 rounded-2xl bg-slate-100 border border-slate-100" />
-                  )}
-                  <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-sm">{rec.title}</h4>
-                </Link>
-              ))}
+          {/* Recommended Posts Box */}
+          {recommendedPosts.length > 0 && (
+            <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex flex-col gap-4">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                <Bookmark className="h-4 w-4 text-indigo-500" />
+                Recommended Posts
+              </h3>
+              <div className="space-y-4">
+                {recommendedPosts.map((rec) => (
+                  <Link key={rec.id} href={`/${rec.slug}`} className="group block space-y-2">
+                    {rec.featuredImage && (
+                      <div className="w-full h-28 rounded-xl overflow-hidden bg-slate-100 border border-slate-100">
+                        <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                      </div>
+                    )}
+                    <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-xs leading-snug">{rec.title}</h4>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </section>
-        )}
-
-        </article>
+          )}
+        </aside>
       </div>
 
       {/* Footer */}
