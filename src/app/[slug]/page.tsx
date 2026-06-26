@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import {
   ArrowLeft,
   Calendar,
@@ -273,7 +274,9 @@ export default async function PostPage({ params }: PageProps) {
               )}
 
               {/* Monetag Ad — below featured image */}
-              <script
+              <Script
+                id="monetag-ad"
+                strategy="afterInteractive"
                 dangerouslySetInnerHTML={{
                   __html: `(function(s){s.dataset.zone='11201525',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
                 }}

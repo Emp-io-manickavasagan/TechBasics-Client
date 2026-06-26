@@ -128,26 +128,6 @@ export default function HomeClient({ initialPosts }: { initialPosts: BlogPost[] 
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "TechBasics",
-            "url": "https://www.techbasics.online",
-            "description": "TechBasics is a minimalist tech blog covering Next.js, React, Firebase, Tailwind CSS, and modern web development fundamentals.",
-            "publisher": {
-              "@type": "Organization",
-              "name": "TechBasics",
-              "logo": {
-                "@type": "ImageObject",
-                "url": "https://www.techbasics.online/logo.png"
-              }
-            }
-          })
-        }}
-      />
 
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
