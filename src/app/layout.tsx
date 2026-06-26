@@ -45,6 +45,9 @@ export const metadata: Metadata = {
   verification: {
     google: "KViTSEA63srf0fJc-cIaD318x-wQMt-rKnrqaOOn8HE",
   },
+  other: {
+    monetag: "705444ebf86f52190070d02432464ba7",
+  },
   robots: {
     index: true,
     follow: true,
