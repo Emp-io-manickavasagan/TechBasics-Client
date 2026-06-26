@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import Script from "next/script";
+import MonatagAd from "../components/MonatagAd";
 import {
   ArrowLeft,
   Calendar,
@@ -273,20 +274,16 @@ export default async function PostPage({ params }: PageProps) {
                 </div>
               )}
 
-              {/* Monetag Ad — below featured image */}
-              <Script
-                id="monetag-ad"
-                strategy="afterInteractive"
-                dangerouslySetInnerHTML={{
-                  __html: `(function(s){s.dataset.zone='11201525',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
-                }}
-              />
+
             </div>
 
             {/* Table of Contents (Mobile Dropdown - visible below xl breakpoint) */}
             <div className="xl:hidden">
               <TableOfContents content={post.content} faqContent={post.mostPeopleAsked} isMobileDropdown={true} />
             </div>
+
+            {/* Monetag Ad — between featured image and content */}
+            <MonatagAd />
 
             {/* Box 2: Main Blog Content */}
             <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-sm overflow-hidden">

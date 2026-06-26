@@ -67,7 +67,24 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <head>
-        {/* RSS feed autodiscovery — lets browsers and feed readers find the feed */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "TechBasics",
+              url: "https://www.techbasics.online",
+              description: "TechBasics is a minimalist tech blog covering Next.js, React, Firebase, Tailwind CSS, and modern web development fundamentals.",
+              publisher: {
+                "@type": "Organization",
+                name: "TechBasics",
+                logo: { "@type": "ImageObject", url: "https://www.techbasics.online/logo.png" },
+              },
+            }),
+          }}
+        />
+        {/* RSS feed autodiscovery */}
         <link
           rel="alternate"
           type="application/rss+xml"
