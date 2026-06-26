@@ -271,6 +271,13 @@ export default async function PostPage({ params }: PageProps) {
                   />
                 </div>
               )}
+
+              {/* Monetag Ad — below featured image */}
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `(function(s){s.dataset.zone='11201525',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))`,
+                }}
+              />
             </div>
 
             {/* Table of Contents (Mobile Dropdown - visible below xl breakpoint) */}
