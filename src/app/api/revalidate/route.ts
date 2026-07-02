@@ -1,6 +1,5 @@
 import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
-import { submitToGoogleIndexing } from "@/lib/google-indexing";
 import { submitToIndexNow } from "@/lib/indexnow";
 
 /**
@@ -8,14 +7,13 @@ import { submitToIndexNow } from "@/lib/indexnow";
  *
  * Called by the admin app after a post is created, updated, or deleted.
  * Triggers Next.js on-demand ISR revalidation for the affected page(s).
- * Also notifies Google Indexing and IndexNow (Bing/Yandex) APIs.
+ * Also notifies IndexNow (Bing, Yandex, etc.) for fast search engine pickup.
  *
  * Body: { secret: string; slug?: string; revalidateHome?: boolean; type?: 'URL_UPDATED' | 'URL_DELETED' }
  *
- * - slug         → revalidates /[slug] (the article page)
+ * - slug           → revalidates /[slug] (the article page)
  * - revalidateHome → revalidates / (the homepage listing)
- * - Both are typically sent together on any post change
- * - type         → Action type for Google Indexing ('URL_UPDATED' or 'URL_DELETED')
+ * - type           → 'URL_UPDATED' or 'URL_DELETED'
  */
 
 // CORS headers — allow the admin app (different origin) to call this endpoint
@@ -61,29 +59,17 @@ export async function POST(request: NextRequest) {
     revalidatePath("/sitemap.xml");
     revalidated.push("/sitemap.xml");
 
-    // Trigger search engine notifications
-    let googleIndexingResult = null;
+    // Notify IndexNow (Bing, Yandex, etc.) — only for new/updated pages, not deletions
     let indexNowResult = null;
-
-    if (slug) {
+    if (slug && type !== "URL_DELETED") {
       const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.techbasics.online").replace(/\/+$/, "");
-      const targetUrl = `${siteUrl}/${slug}`;
-      const actionType = type === "URL_DELETED" ? "URL_DELETED" : "URL_UPDATED";
-
-      // 1. Google Web Search Indexing API
-      googleIndexingResult = await submitToGoogleIndexing(targetUrl, actionType);
-
-      // 2. IndexNow (Bing, Yandex, etc.) - Only submit if the page isn't being deleted
-      if (actionType !== "URL_DELETED") {
-        indexNowResult = await submitToIndexNow(targetUrl);
-      }
+      indexNowResult = await submitToIndexNow(`${siteUrl}/${slug}`);
     }
 
     return NextResponse.json(
       {
         revalidated: true,
         paths: revalidated,
-        googleIndexing: googleIndexingResult,
         indexNow: indexNowResult,
         timestamp: new Date().toISOString(),
       },
