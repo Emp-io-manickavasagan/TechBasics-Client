@@ -19,6 +19,13 @@ export interface BlogPost {
   mostPeopleAsked?: string;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  image: string;
+  createdAt: string;
+}
+
 // ─── Firebase config (from environment variables) ──────────────────────────
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -106,5 +113,23 @@ export const getPostBySlugServer = async (slug: string): Promise<BlogPost | null
     return posts.find((p) => p.slug === slug || p.id === slug) ?? null;
   } catch {
     return null;
+  }
+};
+
+// ─── Server-safe getCategories ─────────────────────────────────────────────
+export const getCategoriesServer = async (): Promise<Category[]> => {
+  const db = getDb();
+  if (!db) return [];
+  try {
+    const q = query(collection(db, "categories"), orderBy("createdAt", "asc"));
+    const snap = await withTimeout(getDocs(q), DB_TIMEOUT_MS);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Category[];
+  } catch {
+    try {
+      const snap2 = await withTimeout(getDocs(collection(db, "categories")), DB_TIMEOUT_MS);
+      return snap2.docs.map((d) => ({ id: d.id, ...d.data() })) as Category[];
+    } catch {
+      return [];
+    }
   }
 };
