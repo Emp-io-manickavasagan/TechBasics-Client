@@ -99,7 +99,7 @@ function CategoryCard({
       className="group flex flex-col bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-lg hover:border-indigo-100 transition-all duration-200 text-left w-full"
     >
       {/* Category cover image */}
-      <div className="relative w-full h-48 bg-slate-100 overflow-hidden">
+      <div className="relative w-full h-32 bg-slate-100 overflow-hidden">
         {category.image ? (
           <img
             src={category.image}
@@ -110,7 +110,7 @@ function CategoryCard({
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-indigo-100 via-indigo-50 to-slate-100 flex items-center justify-center">
-            <span className="text-7xl font-extrabold text-indigo-300 select-none uppercase leading-none">
+            <span className="text-5xl font-extrabold text-indigo-300 select-none uppercase leading-none">
               {category.name.charAt(0)}
             </span>
           </div>
@@ -122,7 +122,7 @@ function CategoryCard({
       </div>
 
       {/* Category name footer bar */}
-      <div className="w-full px-5 py-4 bg-white border-t border-slate-100 flex items-center justify-between group-hover:bg-indigo-50/40 transition-colors">
+      <div className="w-full px-4 py-3 bg-white border-t border-slate-100 flex items-center justify-between group-hover:bg-indigo-50/40 transition-colors">
         <span className="flex items-center gap-2 font-bold text-slate-900 text-sm group-hover:text-indigo-700 transition-colors">
           <FolderIcon className="h-4 w-4 text-indigo-400 group-hover:text-indigo-600 transition-colors" />
           {category.name}
@@ -629,14 +629,19 @@ export default function HomeClient({
               </div>
             )}
 
-            {/* Category cards — 2-column grid, each card shows the category image */}
+            {/* Recommendation Blog Section */}
+            {!loading && recommendedPosts.length > 0 && (
+              <RecommendationSection posts={recommendedPosts} />
+            )}
+
+            {/* Category cards */}
             {!loading && displayCategories.length > 0 && (
               <div>
                 <div className="flex items-center gap-2 mb-5">
                   <span className="w-1 h-6 rounded-full bg-indigo-600 inline-block" />
                   <h2 className="text-lg font-bold text-slate-900">Browse by Category</h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {displayCategories.map((cat) => (
                     <CategoryCard
                       key={cat.id}
@@ -663,11 +668,6 @@ export default function HomeClient({
                   Check back soon — articles are on their way!
                 </p>
               </div>
-            )}
-
-            {/* Recommendation Blog Section */}
-            {!loading && recommendedPosts.length > 0 && (
-              <RecommendationSection posts={recommendedPosts} />
             )}
           </div>
         )}
