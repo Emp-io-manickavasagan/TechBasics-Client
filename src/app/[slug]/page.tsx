@@ -351,8 +351,8 @@ export default async function PostPage({ params }: PageProps) {
                   {recommendedPosts.map((rec) => (
                     <Link key={rec.id} href={`/${rec.slug}`} className="group block space-y-2">
                       {rec.featuredImage && (
-                        <div className="w-full h-28 sm:h-32 rounded-xl overflow-hidden bg-slate-100 border border-slate-100">
-                          <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                        <div className="w-full h-28 sm:h-32 rounded-xl overflow-hidden bg-slate-100 border border-slate-100 flex items-center justify-center">
+                          <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500 bg-white" />
                         </div>
                       )}
                       <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-xs sm:text-sm leading-snug">{rec.title}</h4>
@@ -395,8 +395,8 @@ export default async function PostPage({ params }: PageProps) {
                 {recommendedPosts.map((rec) => (
                   <Link key={rec.id} href={`/${rec.slug}`} className="group block space-y-2">
                     {rec.featuredImage && (
-                      <div className="w-full h-28 rounded-xl overflow-hidden bg-slate-100 border border-slate-100">
-                        <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500" />
+                      <div className="w-full h-28 rounded-xl overflow-hidden bg-slate-100 border border-slate-100 flex items-center justify-center">
+                        <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500 bg-white" />
                       </div>
                     )}
                     <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-xs leading-snug">{rec.title}</h4>

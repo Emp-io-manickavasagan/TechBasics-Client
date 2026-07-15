@@ -44,7 +44,7 @@ function PostCard({ post }: { post: BlogPost }) {
             alt={post.title}
             loading="lazy"
             decoding="async"
-            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+            className="object-contain bg-white w-full h-full group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
@@ -106,7 +106,7 @@ function CategoryCard({
             alt={category.name}
             loading="lazy"
             decoding="async"
-            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+            className="object-contain bg-white w-full h-full group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-indigo-100 via-indigo-50 to-slate-100 flex items-center justify-center">
@@ -158,7 +158,7 @@ function RecommendationSection({ posts }: { posts: BlogPost[] }) {
                   alt={post.title}
                   loading="lazy"
                   decoding="async"
-                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+                  className="object-contain bg-white w-full h-full group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
             ) : (
