@@ -116,7 +116,7 @@ export default async function PostPage({ params }: PageProps) {
     return parseLocalDate(b.createdAt) - parseLocalDate(a.createdAt);
   });
 
-  const recommendedPosts = sortedPosts.filter(p => p.slug !== post.slug && p.visible !== false && p.recommended).slice(0, 3);
+  const recommendedPosts = sortedPosts.filter(p => p.slug !== post.slug && p.visible !== false && p.category === post.category);
 
   const baseUrl = "https://www.techbasics.online";
   const postUrl = `${baseUrl}/${post.slug}`;
@@ -345,7 +345,7 @@ export default async function PostPage({ params }: PageProps) {
               <div className="bg-white border border-slate-100 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col gap-4">
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
                   <Bookmark className="h-4 w-4 text-indigo-500" />
-                  Recommended Posts
+                  Read more like this
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {recommendedPosts.map((rec) => (
@@ -389,7 +389,7 @@ export default async function PostPage({ params }: PageProps) {
             <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm flex flex-col gap-4">
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
                 <Bookmark className="h-4 w-4 text-indigo-500" />
-                Recommended Posts
+                Read more like this
               </h3>
               <div className="space-y-4">
                 {recommendedPosts.map((rec) => (
