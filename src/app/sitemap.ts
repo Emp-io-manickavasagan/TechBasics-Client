@@ -14,12 +14,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const posts = await getPostsServer();
 
-    const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
-      url: `${baseUrl}/${post.slug}`,
-      lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(post.createdAt),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }));
+    const toSafeDate = (dateStr: string): Date => {
+      if (!dateStr) return new Date();
+      const d = new Date(dateStr);
+      return isNaN(d.getTime()) ? new Date() : d;
+    };
+
+    const postEntries: MetadataRoute.Sitemap = posts
+      .filter((post) => post.slug && post.visible !== false)
+      .map((post) => ({
+        url: `${baseUrl}/${post.slug}`,
+        lastModified: toSafeDate(post.updatedAt || post.createdAt),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      }));
 
     return [
       {
