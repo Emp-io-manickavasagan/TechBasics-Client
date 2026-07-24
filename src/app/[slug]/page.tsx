@@ -349,10 +349,10 @@ export default async function PostPage({ params }: PageProps) {
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {recommendedPosts.map((rec) => (
-                    <Link key={rec.id} href={`/${rec.slug}`} className="group block space-y-2">
+                    <Link key={rec.id} href={`/${rec.slug}`} className="group flex flex-col space-y-2">
                       {rec.featuredImage && (
-                        <div className="w-full h-28 sm:h-32 rounded-xl overflow-hidden bg-slate-100 border border-slate-100 flex items-center justify-center">
-                          <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500 bg-white" />
+                        <div className="w-full h-32 flex-shrink-0 rounded-xl bg-white border border-slate-100 flex items-center justify-center">
+                          <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="w-full h-full object-contain p-2" />
                         </div>
                       )}
                       <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-xs sm:text-sm leading-snug">{rec.title}</h4>
@@ -393,10 +393,10 @@ export default async function PostPage({ params }: PageProps) {
               </h3>
               <div className="space-y-4">
                 {recommendedPosts.map((rec) => (
-                  <Link key={rec.id} href={`/${rec.slug}`} className="group block space-y-2">
+                  <Link key={rec.id} href={`/${rec.slug}`} className="group flex flex-col space-y-2">
                     {rec.featuredImage && (
-                      <div className="w-full h-28 rounded-xl overflow-hidden bg-slate-100 border border-slate-100 flex items-center justify-center">
-                        <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="object-contain w-full h-full group-hover:scale-105 transition-transform duration-500 bg-white" />
+                      <div className="w-full h-28 flex-shrink-0 rounded-xl bg-white border border-slate-100 flex items-center justify-center">
+                        <img src={rec.featuredImage} alt={rec.title} loading="lazy" decoding="async" className="w-full h-full object-contain p-2" />
                       </div>
                     )}
                     <h4 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-xs leading-snug">{rec.title}</h4>

@@ -37,14 +37,14 @@ function PostCard({ post }: { post: BlogPost }) {
       href={`/${post.slug}`}
       className="group flex flex-col bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-lg hover:border-indigo-100 transition-all duration-200 h-full"
     >
-      <div className="relative w-full h-44 bg-slate-100 flex-shrink-0 overflow-hidden">
+      <div className="relative w-full h-44 flex-shrink-0 bg-white border-b border-slate-100">
         {post.featuredImage ? (
           <img
             src={post.featuredImage}
             alt={post.title}
             loading="lazy"
             decoding="async"
-            className="object-contain bg-white w-full h-full group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
@@ -83,7 +83,7 @@ function PostCard({ post }: { post: BlogPost }) {
 }
 
 // ─── Category Card ────────────────────────────────────────────────────────────
-// One box per category: category cover image + name bar + post count.
+// One box per category: category cover image + name bar + tagline + post count.
 function CategoryCard({
   category,
   postCount,
@@ -96,17 +96,17 @@ function CategoryCard({
   return (
     <button
       onClick={() => onCategoryClick(category.name)}
-      className="group flex flex-col bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-lg hover:border-indigo-100 transition-all duration-200 text-left w-full"
+      className="group flex flex-col bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-lg hover:border-indigo-100 transition-all duration-200 text-left w-full h-full"
     >
-      {/* Category cover image */}
-      <div className="relative w-full h-32 bg-slate-100 overflow-hidden">
+      {/* Category cover image — fixed height, full image always visible */}
+      <div className="relative w-full h-36 flex-shrink-0 bg-white border-b border-slate-100">
         {category.image ? (
           <img
             src={category.image}
             alt={category.name}
             loading="lazy"
             decoding="async"
-            className="object-contain bg-white w-full h-full group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-indigo-100 via-indigo-50 to-slate-100 flex items-center justify-center">
@@ -121,13 +121,20 @@ function CategoryCard({
         </span>
       </div>
 
-      {/* Category name footer bar */}
-      <div className="w-full px-4 py-3 bg-white border-t border-slate-100 flex items-center justify-between group-hover:bg-indigo-50/40 transition-colors">
-        <span className="flex items-center gap-2 font-bold text-slate-900 text-sm group-hover:text-indigo-700 transition-colors">
-          <FolderIcon className="h-4 w-4 text-indigo-400 group-hover:text-indigo-600 transition-colors" />
-          {category.name}
-        </span>
-        <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all" />
+      {/* Category name + tagline footer — fixed min-height so cards stay uniform */}
+      <div className="w-full px-4 py-3 bg-white border-t border-slate-100 flex flex-col gap-1 flex-1 group-hover:bg-indigo-50/40 transition-colors min-h-[64px]">
+        <div className="flex items-center justify-between">
+          <span className="flex items-center gap-2 font-bold text-slate-900 text-sm group-hover:text-indigo-700 transition-colors">
+            <FolderIcon className="h-4 w-4 text-indigo-400 group-hover:text-indigo-600 transition-colors flex-shrink-0" />
+            {category.name}
+          </span>
+          <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+        </div>
+        {category.tagline && (
+          <p className="text-[11px] text-slate-500 leading-snug line-clamp-2 pl-6">
+            {category.tagline}
+          </p>
+        )}
       </div>
     </button>
   );
@@ -152,13 +159,13 @@ function RecommendationSection({ posts }: { posts: BlogPost[] }) {
             className="group flex items-start gap-3 p-3 rounded-xl border border-slate-100 hover:border-indigo-100 hover:bg-indigo-50/30 transition-all duration-200"
           >
             {post.featuredImage ? (
-              <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+              <div className="w-16 h-16 rounded-lg bg-white border border-slate-100 flex-shrink-0 flex items-center justify-center">
                 <img
                   src={post.featuredImage}
                   alt={post.title}
                   loading="lazy"
                   decoding="async"
-                  className="object-contain bg-white w-full h-full group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-contain p-1"
                 />
               </div>
             ) : (
@@ -202,6 +209,7 @@ export default function HomeClient({
   const [selectedTag, setSelectedTag] = useState("All");
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const [filterOpen, setFilterOpen] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
   const allTags = posts.reduce<string[]>((acc, post) => {
@@ -289,6 +297,13 @@ export default function HomeClient({
   const recommendedPosts = sortedPosts
     .filter((p) => p.recommended)
     .slice(0, 6);
+
+  // Categories shown on landing page — only recommended ones unless "View All" is toggled
+  const recommendedCategories = displayCategories.filter((c) => c.recommended);
+  const hasRecommendedCategories = recommendedCategories.length > 0;
+  const visibleDisplayCategories = (hasRecommendedCategories && !showAllCategories)
+    ? recommendedCategories
+    : displayCategories;
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
@@ -641,8 +656,8 @@ export default function HomeClient({
                   <span className="w-1 h-6 rounded-full bg-indigo-600 inline-block" />
                   <h2 className="text-lg font-bold text-slate-900">Browse by Category</h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {displayCategories.map((cat) => (
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4 items-stretch">
+                  {visibleDisplayCategories.map((cat) => (
                     <CategoryCard
                       key={cat.id}
                       category={cat}
@@ -654,6 +669,28 @@ export default function HomeClient({
                     />
                   ))}
                 </div>
+
+                {/* View All / Show Less toggle — only shown when there are recommended categories */}
+                {hasRecommendedCategories && displayCategories.length > recommendedCategories.length && (
+                  <div className="mt-5 flex justify-center">
+                    <button
+                      onClick={() => setShowAllCategories((prev) => !prev)}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50/50 transition-all shadow-sm"
+                    >
+                      {showAllCategories ? (
+                        <>
+                          <ChevronDown className="h-4 w-4 rotate-180" />
+                          Show Less
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="h-4 w-4" />
+                          View All Categories ({displayCategories.length})
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

@@ -23,6 +23,8 @@ export interface Category {
   id: string;
   name: string;
   image: string;
+  tagline?: string;
+  recommended?: boolean;
   createdAt: string;
 }
 
